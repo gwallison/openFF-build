@@ -44,7 +44,7 @@ we have produced a data set that can facilitate more in-depth
 analyses of chemical use in the fracking industry.
 
 
-## Versions of Open-FF 
+## CodeOcean Versions of Open-FF 
 **Version 11 **:
 
 - Data downloaded from Nov. 7, 2021. 
@@ -59,6 +59,9 @@ analyses of chemical use in the fracking industry.
     database (n=140).  They are no longer included in the standard filtered data set,
     but can still be accessed in the Full data set.  See the list at /data/ST_api_without_pdf.csv
 
+- Changed the file structure of the project to be more in line with python
+    package structure. Started new github repository for this branch (openFF-build).
+    
 **Version 10 - MAJOR REVISION**:
 
 - Data downloaded from Oct 10, 2021. Updated versions of the data may be periodically 
