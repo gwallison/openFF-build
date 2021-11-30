@@ -57,12 +57,12 @@ with open(repo_dir+'/README.txt','w') as f:
     f.write(boilerplate)  # see below for the text
 
 # generate output csv's 
-# ana_set.Standard_data_set().save_compressed()
-# shutil.move(outdir+'standard_filtered.zip',repo_dir+'/standard_filtered.zip')
-# ana_set.Full_set().save_compressed()
-# shutil.move(outdir+'full_no_filter.zip',repo_dir+'/full_no_filter.zip')
-# ana_set.Catalog_set().save_compressed()
-# shutil.move(outdir+'catalog_set.zip',repo_dir+'/catalog_set.zip')
+ana_set.Standard_data_set().save_compressed()
+shutil.move(outdir+'standard_filtered.zip',repo_dir+'/standard_filtered.zip')
+ana_set.Full_set().save_compressed()
+shutil.move(outdir+'full_no_filter.zip',repo_dir+'/full_no_filter.zip')
+ana_set.Catalog_set().save_compressed()
+shutil.move(outdir+'catalog_set.zip',repo_dir+'/catalog_set.zip')
 
 # copy pickles
 pickledir = repo_dir+'/pickles'
