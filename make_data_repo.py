@@ -57,12 +57,12 @@ with open(repo_dir+'/README.txt','w') as f:
     f.write(boilerplate)  # see below for the text
 
 # generate output csv's 
-ana_set.Standard_data_set().save_compressed()
-shutil.move(outdir+'standard_filtered.zip',repo_dir+'/standard_filtered.zip')
-ana_set.Full_set().save_compressed()
-shutil.move(outdir+'full_no_filter.zip',repo_dir+'/full_no_filter.zip')
-ana_set.Catalog_set().save_compressed()
-shutil.move(outdir+'catalog_set.zip',repo_dir+'/catalog_set.zip')
+# ana_set.Standard_data_set().save_compressed()
+# shutil.move(outdir+'standard_filtered.zip',repo_dir+'/standard_filtered.zip')
+# ana_set.Full_set().save_compressed()
+# shutil.move(outdir+'full_no_filter.zip',repo_dir+'/full_no_filter.zip')
+# ana_set.Catalog_set().save_compressed()
+# shutil.move(outdir+'catalog_set.zip',repo_dir+'/catalog_set.zip')
 
 # copy pickles
 pickledir = repo_dir+'/pickles'
@@ -83,11 +83,13 @@ files = ['carrier_list_auto.csv','carrier_list_curated.csv',
          'casing_curated.csv','company_xlate.csv','ST_api_without_pdf.csv',
          'ING_curated.csv','CAS_synonyms.csv','CAS_ref_and_names.csv']
 
+cdir = 'curation_files/'
+os.mkdir(cdir) # made in the cwd.
 with zipfile.ZipFile(repo_dir+'/curation_files.zip','w') as z:
     for fn in files:
         print(f'  - zipping {fn}')
-        z.write(trans_dir+f'{fn}',compress_type=zipfile.ZIP_DEFLATED)    
-         
-# copy Analysis set extractor
+        shutil.copy(trans_dir+fn,cdir)
+        z.write(cdir+fn,compress_type=zipfile.ZIP_DEFLATED)    
+shutil.rmtree(cdir)         
 
 
