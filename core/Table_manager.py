@@ -22,14 +22,14 @@ class Table_constructor():
         self.trans_dir = self.sources+'transformed/'
         self.outdir = outdir
         self.tables = {'disclosures': None,
-                       'records': None,
+                       'chemrecs': None,
                        'cas_ing': None,
                        'bgCAS': None,
                        'companies': None # all company data is also in records/disc
                        }
 
         self.pickle_fn = {'disclosures': self.pkldir+'disclosures.pkl',
-                          'records': self.pkldir+'chemrecs.pkl',
+                          'chemrecs': self.pkldir+'chemrecs.pkl',
                           'cas_ing': self.pkldir+'cas_ing.pkl',
                           #'cas_ing_xlate': self.pkldir+'cas_ing_xlate.pkl',
                           'bgCAS': self.pkldir+'bgCAS.pkl',
@@ -224,14 +224,14 @@ class Table_constructor():
         self.print_step(f'Number uncurated Suppliers: {len(unSup)} {flag}',2)
 
         self.print_step('flagging duplicate records',1)
-        self.tables['records'] = self.flag_duplicated_records(df)
+        self.tables['chemrecs'] = self.flag_duplicated_records(df)
         ct.na_check(df,txt='assembling chem_rec end')
 
     ############   POST ASSEMBLY PROCESSING   ############
 
     def flag_empty_disclosures(self):
         self.print_step('flagging disclosures without chem records')
-        gb = self.tables['records'].groupby('UploadKey',as_index=False)['ingKeyPresent'].sum()
+        gb = self.tables['chemrecs'].groupby('UploadKey',as_index=False)['ingKeyPresent'].sum()
         gb['no_chem_recs'] = np.where(gb.ingKeyPresent==0,True,False)
         df = pd.merge(self.tables['disclosures'],
                       gb[['UploadKey','no_chem_recs']],
@@ -291,9 +291,9 @@ class Table_constructor():
     def apply_carrier_tables(self):
         self.print_step('applying carrier table data')
         ukl = self.tables['disclosures'].UploadKey.unique().tolist()
-        #ikl = self.tables['records'].IngredientKey.unique().tolist()        
+        #ikl = self.tables['chemrecs'].IngredientKey.unique().tolist()        
 
-        recs = self.tables['records']
+        recs = self.tables['chemrecs']
         disc = self.tables['disclosures']
         disc = disc.set_index('UploadKey')
         recs = recs.set_index('IngredientKey')
@@ -376,26 +376,26 @@ class Table_constructor():
         recs.loc[ik,'is_water_carrier']  = True
         
         self.tables['disclosures'] = disc.reset_index()
-        self.tables['records'] = recs.reset_index()
+        self.tables['chemrecs'] = recs.reset_index()
         
         
 
     def make_whole_dataset_flags(self):
         self.print_step('make whole data set flags')
-        rec_df, disc_df = mt.prep_datasets(rec_df=self.tables['records'],
+        rec_df, disc_df = mt.prep_datasets(rec_df=self.tables['chemrecs'],
                                            disc_df=self.tables['disclosures'])
-        self.tables['records'] = rec_df
+        self.tables['chemrecs'] = rec_df
         self.tables['disclosures'] = disc_df
 
     def mass_calculations(self):
         self.print_step('calculating mass',newlinefirst=True)
-        rec_df, disc_df = mt.calc_mass(rec_df=self.tables['records'],
+        rec_df, disc_df = mt.calc_mass(rec_df=self.tables['chemrecs'],
                                        disc_df=self.tables['disclosures'])
         rec_df = pd.merge(rec_df,disc_df[['UploadKey','within_total_tolerance']],
                           on='UploadKey',how='left')
         rec_df.calcMass = np.where(rec_df.within_total_tolerance,
                                    rec_df.calcMass,np.NaN)
-        self.tables['records'] = rec_df.drop(['within_total_tolerance'],axis=1)
+        self.tables['chemrecs'] = rec_df.drop(['within_total_tolerance'],axis=1)
         self.tables['disclosures'] = disc_df
         
         self.print_step(f'number of recs with calculated mass: {len(rec_df[rec_df.calcMass>0]):,}',1)                
@@ -406,7 +406,7 @@ class Table_constructor():
         non_company = ['third party','operator','ambiguous',
                        'company supplied','customer','multiple suppliers',
                        'not a company','missing']
-        rec = self.tables['records'].copy()
+        rec = self.tables['chemrecs'].copy()
         rec = rec[~(rec.bgSupplier.isin(non_company))]
         gb = rec.groupby('UploadKey')['bgSupplier'].agg(lambda x: x.value_counts().index[0])
         gb = gb.reset_index()
@@ -458,7 +458,7 @@ class Table_constructor():
 
     def get_table_creation_date(self):
         try:
-            t = os.path.getmtime(self.pickle_fn['records'])
+            t = os.path.getmtime(self.pickle_fn['chemrecs'])
             return datetime.datetime.fromtimestamp(t)
         except:
             return False

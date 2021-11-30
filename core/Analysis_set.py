@@ -159,8 +159,8 @@ class Standard_data_set(Template_data_set):
                ~(self.t_man.tables['disclosures'].no_chem_recs)
         self.wDisc = self.t_man.tables['disclosures'][cond].copy()
         
-        cond = ~(self.t_man.tables['records'].dup_rec)
-        self.wRec = self.t_man.tables['records'][cond].copy()
+        cond = ~(self.t_man.tables['chemrecs'].dup_rec)
+        self.wRec = self.t_man.tables['chemrecs'][cond].copy()
         
         self.wBgCAS = self.t_man.tables['bgCAS'].copy()
         
@@ -175,7 +175,7 @@ class Standard_data_set(Template_data_set):
                                      'TVD','bgOperatorName','primarySupplier',
                                      'carrier_status']
                                      )
-        self.wC['records'] = set(['UploadKey','CASNumber','IngredientName',
+        self.wC['chemrecs'] = set(['UploadKey','CASNumber','IngredientName',
                                   'Supplier','bgCAS','calcMass','categoryCAS',
                                   'PercentHFJob','Purpose','TradeName','bgSupplier',
                                   'is_valid_cas'])
@@ -186,7 +186,7 @@ class Standard_data_set(Template_data_set):
     def merge_tables(self):
         #print(f'in std merge: {self.wC}')
         self.df = pd.merge(self.wDisc[self.wC['disclosures']],
-                           self.wRec[self.wC['records']],
+                           self.wRec[self.wC['chemrecs']],
                            on='UploadKey',
                            how='inner',validate='1:m')
         self.df = pd.merge(self.df,
@@ -265,7 +265,7 @@ class Full_set(Template_data_set):
 
     def make_work_tables(self):
         self.wDisc = self.t_man.tables['disclosures'].copy()
-        self.wRec = self.t_man.tables['records'].copy()       
+        self.wRec = self.t_man.tables['chemrecs'].copy()       
         self.wBgCAS = self.t_man.tables['bgCAS'].copy()
 
 
@@ -316,7 +316,7 @@ class Catalog_set(Full_set):
                                      'within_total_tolerance','data_source',
                                      'carrier_mass','carrier_mass_MI']
                                      )
-        self.wC['records'] = set(['UploadKey','CASNumber','IngredientName',
+        self.wC['chemrecs'] = set(['UploadKey','CASNumber','IngredientName',
                                   'Supplier','PercentHighAdditive',
                                  'bgCAS','calcMass','categoryCAS',
                                  'PercentHFJob',
@@ -334,7 +334,7 @@ class Catalog_set(Full_set):
     def merge_tables(self):
         #print(f'in catalog set: {self.wC}')
         self.df = pd.merge(self.wDisc[self.wC['disclosures']],
-                           self.wRec[self.wC['records']],
+                           self.wRec[self.wC['chemrecs']],
                            on='UploadKey',
                            how='inner',validate='1:m')
         self.df = pd.merge(self.df,
@@ -385,14 +385,14 @@ class Min_filtered(Standard_data_set):
     
     def keep_mininal_fields(self):
         self.wC['disclosures'] = set(['UploadKey','date','APINumber'])
-        self.wC['records'] = set(['UploadKey','bgCAS','calcMass','PercentHFJob'])
+        self.wC['chemrecs'] = set(['UploadKey','bgCAS','calcMass','PercentHFJob'])
 
     def choose_fields(self):
         self.keep_mininal_fields()
     def merge_tables(self):
         #print(f'in min filter merge: {self.wC}')
         self.df = pd.merge(self.wDisc[self.wC['disclosures']],
-                           self.wRec[self.wC['records']],
+                           self.wRec[self.wC['chemrecs']],
                            on='UploadKey',
                            how='inner',validate='1:m')
 
@@ -434,7 +434,7 @@ class Min_no_filter(Standard_data_set):
     def keep_mininal_fields(self):
         self.wC['disclosures'] = set(['UploadKey','date','APINumber',
                                       'is_duplicate','no_chem_recs'])
-        self.wC['records'] = set(['UploadKey','bgCAS','calcMass','PercentHFJob',
+        self.wC['chemrecs'] = set(['UploadKey','bgCAS','calcMass','PercentHFJob',
                                   'dup_rec'])
 
     def choose_fields(self):
@@ -442,12 +442,12 @@ class Min_no_filter(Standard_data_set):
 
     def make_work_tables(self):
         self.wDisc = self.t_man.tables['disclosures'].copy()
-        self.wRec = self.t_man.tables['records'].copy()       
+        self.wRec = self.t_man.tables['chemrecs'].copy()       
 
     def merge_tables(self):
         #print(f'in min no filter merge: {self.wC}')
         self.df = pd.merge(self.wDisc[self.wC['disclosures']],
-                           self.wRec[self.wC['records']],
+                           self.wRec[self.wC['chemrecs']],
                            on='UploadKey',
                            how='inner',validate='1:m')
         self.df['in_std_filtered'] = ~(self.df.is_duplicate)&\
@@ -487,7 +487,7 @@ class MI_analysis_set(Full_set):
                                      'carrier_mass','carrier_mass_MI',
                                      'carrier_density_MI']
                                      )
-        self.wC['records'] = set(['UploadKey','CASNumber',#'IngredientName',
+        self.wC['chemrecs'] = set(['UploadKey','CASNumber',#'IngredientName',
                                  'bgCAS','calcMass','category','PercentHFJob',
                                  'Purpose',#'TradeName','bgSupplier',
                                  'dup_rec','is_water_carrier',
@@ -501,7 +501,7 @@ class MI_analysis_set(Full_set):
     def merge_tables(self):
         #print(f'in catalog set: {self.wC}')
         self.df = pd.merge(self.wDisc[self.wC['disclosures']],
-                           self.wRec[self.wC['records']],
+                           self.wRec[self.wC['chemrecs']],
                            on='UploadKey',
                            how='inner',validate='1:m')
         self.df = pd.merge(self.df,
