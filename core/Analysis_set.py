@@ -236,7 +236,6 @@ class Standard_location(Standard_data_set):
 
         
     def merge_tables(self):
-        #print(f'in std loc merge: {self.wC}')
         # no merging required; ignore all but disclosure table
         self.df = self.wDisc[self.wC['disclosures']]
 
@@ -265,10 +264,7 @@ class Full_set(Template_data_set):
                 self.wC[t].add(fn) 
 
     def make_work_tables(self):
-        #cond = ~(self.t_man.tables['disclosures'].is_duplicate) &\
-        #       ~(self.t_man.tables['disclosures'].no_chem_recs)
         self.wDisc = self.t_man.tables['disclosures'].copy()
-        #cond = ~(self.t_man.tables['records'].dup_rec)
         self.wRec = self.t_man.tables['records'].copy()       
         self.wBgCAS = self.t_man.tables['bgCAS'].copy()
 
@@ -492,14 +488,11 @@ class MI_analysis_set(Full_set):
                                      'carrier_density_MI']
                                      )
         self.wC['records'] = set(['UploadKey','CASNumber',#'IngredientName',
-                                  #'Supplier','PercentHighAdditive',
                                  'bgCAS','calcMass','category','PercentHFJob',
                                  'Purpose',#'TradeName','bgSupplier',
                                  'dup_rec','is_water_carrier',
                                  'MassIngredient'])
         self.wC['bgCAS'] = set(['bgCAS','bgIngredientName',#'is_on_TEDX',
-                                #'is_on_prop65','is_on_CWA_SDWA',
-                                #'is_on_PFAS_list','is_on_volatile_list'
                                 ])
 
     def choose_fields(self):

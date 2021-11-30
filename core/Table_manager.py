@@ -36,7 +36,6 @@ class Table_constructor():
                           'companies': self.pkldir+'companies.pkl'
                           }
 
-        # self.cas_ing_fn = sources+'casing_curate_master.csv'
         self.cas_ing_fn = self.trans_dir+'casing_curated.csv'
         self.cas_ing_source = pd.read_csv(self.cas_ing_fn,quotechar='$',encoding='utf-8')
 
@@ -139,12 +138,10 @@ class Table_constructor():
                                   'Projection',
                                   'WellName','FederalWell','IndianWell',
                                   'data_source']].first()
-        #df['date'] = pd.to_datetime(df.JobEndDate,errors='coerce')
         
         self.print_step('create bgOperatorName',1)
         cmp = self.tables['companies'][['rawName','xlateName']]
         cmp.columns = ['OperatorName','bgOperatorName']
-        #df['opN'] = df.OperatorName.str.strip().str.lower()
         df = pd.merge(df,cmp,on='OperatorName', how='left')
 
         unOp = df[df.bgOperatorName.isna()]
@@ -324,16 +321,10 @@ class Table_constructor():
         self.print_step(f'Auto-detected carriers: {len(auto_carrier_df)}',1)
 
         # get the auto_carrier label 
-        #gb = auto_carrier_df.groupby('UploadKey',as_index=False)['auto_carrier_type'].first()
-        #disc = pd.merge(disc,gb,on='UploadKey',how='left')
-        #print(disc.columns)
-        #print(f'upk in df? {len(disc[disc.UploadKey=="075c71bf-6565-4758-8af3-7a49ed5851e4"])}')
         uk = auto_carrier_df.UploadKey.tolist()
-        #phfj = auto_carrier_df.PercentHFJob.tolist()
         ik = auto_carrier_df.IngredientKey.tolist()
         disc.loc[uk,'has_water_carrier'] = True
         disc.loc[uk,'carrier_status'] = 'auto-detected'
-        #disc.loc[uk,'carrier_percent'] = phfj
         try:
             recs.loc[ik,'is_water_carrier']  = True
         except:
@@ -384,13 +375,6 @@ class Table_constructor():
         ik = cur_carrier_df[cur_carrier_df.is_water_carrier].IngredientKey.tolist()
         recs.loc[ik,'is_water_carrier']  = True
         
-# =============================================================================
-#         # next install data from non-water carriers - just as reference
-#         cond = cur_carrier_df.cur_carrier_status=='carrier_not_water'
-#         ik = cur_carrier_df[cond].IngredientKey.tolist()
-#         recs.loc[ik,'non_water_carrier']  = True
-#         
-# =============================================================================
         self.tables['disclosures'] = disc.reset_index()
         self.tables['records'] = recs.reset_index()
         
@@ -403,13 +387,6 @@ class Table_constructor():
         self.tables['records'] = rec_df
         self.tables['disclosures'] = disc_df
 
-# =============================================================================
-#     def recalc_percentages(self):
-#         disc_df = mt.calc_overall_percentages(rec_df=self.tables['records'],
-#                                                    disc_df=self.tables['disclosures'])
-#         self.tables['disclosures'] = disc_df
-# 
-# =============================================================================
     def mass_calculations(self):
         self.print_step('calculating mass',newlinefirst=True)
         rec_df, disc_df = mt.calc_mass(rec_df=self.tables['records'],
@@ -422,7 +399,6 @@ class Table_constructor():
         self.tables['disclosures'] = disc_df
         
         self.print_step(f'number of recs with calculated mass: {len(rec_df[rec_df.calcMass>0]):,}',1)                
-        #self.print_step(f'number of recs with calculated mass: {len(rec_df[(rec_df.calcMass>0)&(rec_df.within_total_tolerance)]):,}',1)                
         
             
     def gen_primarySupplier(self): 
