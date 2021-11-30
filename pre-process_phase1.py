@@ -54,7 +54,7 @@ df.to_csv('./tmp/CAS_to_curateNEW.csv',index=False,encoding='utf-8',quotechar='$
 
 c_xlate_to_curate = complist.add_new_to_Xlate(rawdf)
 
-# loc_clean.clean_location(master_raw)
+loc_clean.clean_location(master_raw)
 
 
 
