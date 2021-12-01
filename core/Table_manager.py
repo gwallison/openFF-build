@@ -306,7 +306,7 @@ class Table_constructor():
         disc['has_curated_carrier'] = False
         disc['has_water_carrier'] = False
         disc['carrier_problem_flags'] = ''
-        disc['non_water_carrier'] = False
+        #disc['non_water_carrier'] = False
 
         # **** auto carrier install
         auto_carrier_df = pd.read_csv(self.trans_dir+'carrier_list_auto.csv',
