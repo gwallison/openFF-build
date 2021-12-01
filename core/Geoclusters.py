@@ -16,8 +16,7 @@ trans_dir = common.get_transformed_dir()
 
 class Geoclusters():
     
-    def __init__(self,#tab_manager = None,
-                 locdf = None):  
+    def __init__(self, locdf = None):  
         self.df = locdf.copy()
              
 

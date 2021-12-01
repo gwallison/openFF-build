@@ -26,7 +26,7 @@ well as a set of flags that will go into the record_flags:
 from geopy.distance import geodesic
 import pandas as pd
 import numpy as np
-from core.Geoclusters import Geoclusters
+#from core.Geoclusters import Geoclusters
 
 import common
 trans_dir = common.get_transformed_dir()
@@ -58,8 +58,8 @@ def save_upload_ref(df):
     added to this project (as opposed to the date it first appears in FF)"""
     
     df[['UploadKey','StateName','bgStateName','CountyName','bgCountyName',
-        'Latitude','bgLatitude','Longitude','bgLongitude','clusterID',
-        'latlon_too_coarse','geo_distance',
+        'Latitude','bgLatitude','Longitude','bgLongitude',#'clusterID',
+        'latlon_too_coarse',#'geo_distance',
         'loc_name_error','latlon_out_of_range',
         'flipped_loc']].to_csv(upload_ref_fn,quotechar='$',encoding='utf-8',
                                index=False)
@@ -152,12 +152,15 @@ def clean_location(rawdf):
     print('  -- check names')
     t = check_names(t)
 
-    ## now make clusters
-    
-    gc = Geoclusters(locdf=t) #[:100])
-    ev = gc.make_simple_clusters()
-    
-    save_upload_ref(ev)
-
+    save_upload_ref(t)
+# =============================================================================
+#     ## now make clusters
+#     
+#     gc = Geoclusters(locdf=t) #[:100])
+#     ev = gc.make_simple_clusters()
+#     
+#     save_upload_ref(ev)
+# 
+# =============================================================================
 
 
