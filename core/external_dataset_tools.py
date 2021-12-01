@@ -7,29 +7,31 @@ Created on Mon Nov 18 09:32:29 2019
 import pandas as pd
 import numpy as np
 
-def add_Elsner_table(df,sources='./sources/',
-                     outdir='./out/',
-                     ehfn='elsner_corrected_table.csv'):
-    #print('Adding Elsner/Hoelzer table to CAS table')
-    ehdf = pd.read_csv(sources+ehfn,quotechar='$')
 # =============================================================================
-#     # checking overlap first:
-#     ehcas = list(ehdf.eh_CAS.unique())
-#     dfcas = list(df.bgCAS.unique())
-#     with open(outdir+'elsner_non_overlap.txt','w') as f:
-#         f.write('**** bgCAS numbers without an Elsner entry: *****\n')
-#         for c in dfcas:
-#             if c not in ehcas:
-#                 f.write(f'{c}\n')
-#         f.write('\n\n***** Elsner CAS numbers without a FF entry: *****\n')
-#         for c in ehcas:
-#             if c not in dfcas:
-#                 f.write(f'{c}\n')
-# 
+# def add_Elsner_table(df,sources='./sources/',
+#                      outdir='./out/',
+#                      ehfn='elsner_corrected_table.csv'):
+#     #print('Adding Elsner/Hoelzer table to CAS table')
+#     ehdf = pd.read_csv(sources+ehfn,quotechar='$')
+# # =============================================================================
+# #     # checking overlap first:
+# #     ehcas = list(ehdf.eh_CAS.unique())
+# #     dfcas = list(df.bgCAS.unique())
+# #     with open(outdir+'elsner_non_overlap.txt','w') as f:
+# #         f.write('**** bgCAS numbers without an Elsner entry: *****\n')
+# #         for c in dfcas:
+# #             if c not in ehcas:
+# #                 f.write(f'{c}\n')
+# #         f.write('\n\n***** Elsner CAS numbers without a FF entry: *****\n')
+# #         for c in ehcas:
+# #             if c not in dfcas:
+# #                 f.write(f'{c}\n')
+# # 
+# # =============================================================================
+#     mg = pd.merge(df,ehdf,left_on='bgCAS',right_on='eh_CAS',
+#                   how='left',validate='1:1')
+#     return mg
 # =============================================================================
-    mg = pd.merge(df,ehdf,left_on='bgCAS',right_on='eh_CAS',
-                  how='left',validate='1:1')
-    return mg
 
 # =============================================================================
 # def add_WellExplorer_table(df,sources='./sources/',
@@ -141,7 +143,7 @@ def add_all_bgCAS_tables(df,sources='./sources/external_refs/',
     #df = add_TSCA_ref(df,sources)
     df = add_TEDX_ref(df,sources)
     #df = add_WellExplorer_table(df,sources,outdir)
-    df = add_Elsner_table(df,sources,outdir)
+    #df = add_Elsner_table(df,sources,outdir)
     df = add_PFAS_ref(df,sources)
     df = add_Volatile_ref(df,sources)
     return df
