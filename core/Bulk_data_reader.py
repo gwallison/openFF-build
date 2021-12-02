@@ -43,7 +43,8 @@ class Read_FF():
         self.cols_to_lower = ['IngredientName']
         
     def getMissingList(self):
-        df = pd.read_csv(self.sources+ 'transformed/missing_values.csv')
+        df = pd.read_csv(self.sources+ 'transformed/missing_values.csv',
+                         quotechar='$',encoding='utf-8')
         return df.missing_value.tolist()
     
     def get_density_from_comment(self,cmmt):
