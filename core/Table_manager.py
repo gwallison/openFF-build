@@ -283,7 +283,7 @@ class Table_constructor():
 #     def apply_auto_record(self,disc,recs,row):
 #         disc.loc[row.UploadKey,'carrier_status'] = 'auto'
 #         disc.loc[row.UploadKey,'carrier_percent'] = row.PercentHFJob
-#         disc.loc[row.UploadKey,'has_water_carrier'] = True
+#         #disc.loc[row.UploadKey,'has_water_carrier'] = True
 #         recs.loc[row.IngredientKey,'is_water_carrier'] = True 
 #         return disc,recs
 #     
@@ -304,7 +304,7 @@ class Table_constructor():
         disc['carrier_status'] = 'unknown'
         #disc['carrier_percent'] = np.NaN
         #disc['has_curated_carrier'] = False
-        disc['has_water_carrier'] = False
+        #disc['has_water_carrier'] = False
         disc['carrier_problem_flags'] = ''
         #disc['non_water_carrier'] = False
 
@@ -323,7 +323,7 @@ class Table_constructor():
         # get the auto_carrier label 
         uk = auto_carrier_df.UploadKey.tolist()
         ik = auto_carrier_df.IngredientKey.tolist()
-        disc.loc[uk,'has_water_carrier'] = True
+        #disc.loc[uk,'has_water_carrier'] = True
         disc.loc[uk,'carrier_status'] = 'auto-detected'
         try:
             recs.loc[ik,'is_water_carrier']  = True
@@ -369,7 +369,7 @@ class Table_constructor():
         # first install data from water-based-carriers
         cond = cur_carrier_df.cur_carrier_status=='water_based_carrier'
         uk = cur_carrier_df[cond].UploadKey.tolist()
-        disc.loc[uk,'has_water_carrier'] = True
+        #disc.loc[uk,'has_water_carrier'] = True
         disc.loc[uk,'carrier_status'] = 'curation-detected'
 
         ik = cur_carrier_df[cur_carrier_df.is_water_carrier].IngredientKey.tolist()
