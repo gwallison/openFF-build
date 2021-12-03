@@ -6,8 +6,8 @@ Created on Thu Jun 24 15:37:55 2021
 """
 import pandas as pd
 import numpy as np
-import common
-trans_dir = common.get_transformed_dir()
+import build_common
+trans_dir = build_common.get_transformed_dir()
 
 
 lower_tolerance = 95

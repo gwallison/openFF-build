@@ -8,8 +8,8 @@ Created on Mon Oct  4 13:09:22 2021
 import pandas as pd
 import numpy as np
 
-import common
-trans_dir = common.get_transformed_dir()
+import build_common
+trans_dir = build_common.get_transformed_dir()
 
 
 def make_casing(df): 
@@ -30,8 +30,8 @@ def make_casing(df):
                           encoding='utf-8')
     ING_cur = pd.read_csv(trans_dir+'ING_curated.csv',quotechar='$',
                           encoding='utf-8')
-    mg = pd.merge(casing,CAS_cur,on='CASNumber',how='left')
-    mg = pd.merge(mg,ING_cur,on='IngredientName',how='left')
+    mg = pd.merge(casing,CAS_cur,on='CASNumber',how='left',validate='m:1')
+    mg = pd.merge(mg,ING_cur,on='IngredientName',how='left',validate='m:1')
     #mg = mg.rename({'bgSource':'bgSource_old'},axis=1)
     #print(mg.columns)
     c_ing_numeric = mg.prospect_CAS_fromIng.str[0].isin(['0','1','2','3','4','5','6','7','8','9'])

@@ -14,9 +14,9 @@ import pandas as pd
 import numpy as np
 import sys
 import core.cas_tools as ct
-import common
+import build_common
 
-trans_dir = common.get_transformed_dir()
+trans_dir = build_common.get_transformed_dir()
         
 def initial_CAS_master_list(rawdf): # rawdf
     old = pd.read_csv(trans_dir+'CAS_curated.csv',quotechar='$',

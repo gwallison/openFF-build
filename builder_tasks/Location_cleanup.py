@@ -28,8 +28,8 @@ import pandas as pd
 import numpy as np
 #from core.Geoclusters import Geoclusters
 
-import common
-trans_dir = common.get_transformed_dir()
+import build_common
+trans_dir = build_common.get_transformed_dir()
 
 #### -----------   File handles  -------------- ####
 sources = trans_dir

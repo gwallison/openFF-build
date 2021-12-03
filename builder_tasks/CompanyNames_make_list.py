@@ -8,9 +8,9 @@ Created on Thu May 20 12:59:40 2021
 #import numpy as np
 import pandas as pd
 #import core.cas_tools as ct
-import common
+import build_common
 
-trans_dir = common.get_transformed_dir()
+trans_dir = build_common.get_transformed_dir()
 
 def add_new_to_Xlate(rawdf):
     old = pd.read_csv(trans_dir+'company_xlate.csv',quotechar='$')
