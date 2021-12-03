@@ -303,7 +303,7 @@ class Table_constructor():
         recs['is_water_carrier'] = False
         disc['carrier_status'] = 'unknown'
         #disc['carrier_percent'] = np.NaN
-        disc['has_curated_carrier'] = False
+        #disc['has_curated_carrier'] = False
         disc['has_water_carrier'] = False
         disc['carrier_problem_flags'] = ''
         #disc['non_water_carrier'] = False
