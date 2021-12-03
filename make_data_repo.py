@@ -23,14 +23,14 @@ import os, shutil
 import core.Analysis_set as ana_set
 import datetime
 import zipfile
-import common
-outdir = common.get_pickle_dir()
-sources = common.get_data_dir()
-trans_dir = common.get_transformed_dir()
+import build_common
+outdir = build_common.get_pickle_dir()
+sources = build_common.get_data_dir()
+trans_dir = build_common.get_transformed_dir()
 tempfolder = './tmp/'
 
 repo_name = '2021-11-28_testing'
-repo_dir = common.get_repo_dir() + repo_name
+repo_dir = build_common.get_repo_dir() + repo_name
 pklsource = 'currentData_pickles'
 
 descriptive_notes = f""" This is a test data repo.
@@ -57,12 +57,12 @@ with open(repo_dir+'/README.txt','w') as f:
     f.write(boilerplate)  # see below for the text
 
 # generate output csv's 
-ana_set.Standard_data_set().save_compressed()
-shutil.move(outdir+'standard_filtered.zip',repo_dir+'/standard_filtered.zip')
-ana_set.Full_set().save_compressed()
-shutil.move(outdir+'full_no_filter.zip',repo_dir+'/full_no_filter.zip')
-ana_set.Catalog_set().save_compressed()
-shutil.move(outdir+'catalog_set.zip',repo_dir+'/catalog_set.zip')
+# ana_set.Standard_data_set().save_compressed()
+# shutil.move(outdir+'standard_filtered.zip',repo_dir+'/standard_filtered.zip')
+# ana_set.Full_set().save_compressed()
+# shutil.move(outdir+'full_no_filter.zip',repo_dir+'/full_no_filter.zip')
+# ana_set.Catalog_set().save_compressed()
+# shutil.move(outdir+'catalog_set.zip',repo_dir+'/catalog_set.zip')
 
 # copy pickles
 pickledir = repo_dir+'/pickles'

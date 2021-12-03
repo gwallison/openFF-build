@@ -20,9 +20,9 @@ Change the file handles at the top of this code to appropriate directories.
 # =============================================================================
 
 ####### uncomment below for local runs
-import common
-outdir = common.get_pickle_dir()
-sources = common.get_data_dir()
+import build_common
+outdir = build_common.get_pickle_dir()
+sources = build_common.get_data_dir()
 tempfolder = './tmp/'
 
 
