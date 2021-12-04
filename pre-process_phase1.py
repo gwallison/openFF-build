@@ -45,12 +45,8 @@ rawdf = master_raw[['CASNumber','IngredientName',
                     'OperatorName','Supplier',]].fillna('MISSING')
 
 cas1 = CAS1.initial_CAS_master_list(rawdf)
-# print(cas1.head())
 df, cas_to_curate = CAS1.merge_CAS_with_ref(cas1)
 df.to_csv('./tmp/CAS_to_curateNEW.csv',index=False,encoding='utf-8',quotechar='$')
-
-# ing_to_curate = CAS1.initial_Ing_master_list(rawdf)
-
 
 c_xlate_to_curate = complist.add_new_to_Xlate(rawdf)
 
@@ -87,7 +83,7 @@ NEXT STEPS:
         the CURATION step. Find it as /tmp/company_xlateNEW.csv IF THERE ARE
         ANY TO CURATE.
         
-    3)  When finished curating, move to /sources (be sure to save old one as backup)
+    3)  When finished curating, move to /data/transformed (be sure to save old one as backup)
         and move on to the next step.  (After curating and moving, it is a good idea
         to run this again to verify that you caught all that needed to be curated.)
 
