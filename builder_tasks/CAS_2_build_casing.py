@@ -30,6 +30,8 @@ def make_casing(df):
                           encoding='utf-8')
     ING_cur = pd.read_csv(trans_dir+'ING_curated.csv',quotechar='$',
                           encoding='utf-8')
+    ING_cur[ING_cur.IngredientName.duplicated(keep=False)].to_csv('./tmp/ING_cur_dups.csv',
+                                                                  quotechar='$')
     mg = pd.merge(casing,CAS_cur,on='CASNumber',how='left',validate='m:1')
     mg = pd.merge(mg,ING_cur,on='IngredientName',how='left',validate='m:1')
     #mg = mg.rename({'bgSource':'bgSource_old'},axis=1)

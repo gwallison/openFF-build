@@ -10,6 +10,9 @@ This set of routines is used to assist in the curation of IngredientName.
 import numpy as np
 import pandas as pd
 import difflib as dl
+import build_common
+
+sources = build_common.get_transformed_dir()
 
 # nonspdf = pd.read_csv('./sources/IngName_non-specific_list.csv',quotechar='$',
 #                       encoding='utf-8')
@@ -72,12 +75,12 @@ def ref_stats(dic):
 
 def build_refdic():
     refdic = {}
-    nonspdf = pd.read_csv('./sources/IngName_non-specific_list.csv',quotechar='$',
+    nonspdf = pd.read_csv(sources+'IngName_non-specific_list.csv',quotechar='$',
                       encoding='utf-8')
-    ctsyndf = pd.read_csv('./sources/CAS_synonyms_CompTox.csv',quotechar='$',
+    ctsyndf = pd.read_csv(sources+'CAS_synonyms_CompTox.csv',quotechar='$',
                           encoding='utf-8')
     ctsyndf = ctsyndf[~ctsyndf.duplicated()]
-    sfsyndf = pd.read_csv('./sources/CAS_synonyms.csv',quotechar='$',
+    sfsyndf = pd.read_csv(sources+'CAS_synonyms.csv',quotechar='$',
                       encoding='utf-8')
     # build refdic, one ref set at a time
     print('scifinder to refdic...')

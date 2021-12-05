@@ -312,7 +312,7 @@ class Catalog_set(Full_set):
                                      'TVD','bgOperatorName','primarySupplier',
                                      'is_duplicate','no_chem_recs',
                                      'has_TBWV','has_water_carrier',
-                                     'has_curated_carrier',
+                                     #'has_curated_carrier',
                                      'within_total_tolerance','data_source',
                                      'carrier_mass','carrier_mass_MI']
                                      )

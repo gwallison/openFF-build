@@ -20,7 +20,7 @@ do_abbrev = False
 startfile = 0 # 0 for full set
 endfile = None  # None for no upper limit
 inc_skyTruth = True
-# inc_skyTruth = False
+#inc_skyTruth = False
 
 if (startfile!=0) | (endfile!=None) | (inc_skyTruth==False):
     # test mode does not overwrite production mode pickles

@@ -32,7 +32,7 @@ NEXT STEPS:
         
         The list of new pairs has been generated and intially curated.
         Examine the file  /tmp/casing_curatedNEW.csv and
-        replace the /sources version.  
+        replace the /data/transformed version.  
         
         Targets of curation should be:
             - conflicting bgSources
