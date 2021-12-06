@@ -47,7 +47,7 @@ analyses of chemical use in the fracking industry.
 ## CodeOcean Versions of Open-FF 
 **Version 11 **:
 
-- Data downloaded from Nov. 7, 2021. 
+- Data downloaded from Dec. 4, 2021. 
 
 - cleanMI field added that is MassIngredient with values that are inconsistent at
     the disclosure level removed.
@@ -61,6 +61,9 @@ analyses of chemical use in the fracking industry.
 
 - Changed the file structure of the project to be more in line with python
     package structure. Started new github repository for this branch (openFF-build).
+    
+- Removed clusterID and other fields that were experimental or not used.
+
     
 **Version 10 - MAJOR REVISION**:
 
