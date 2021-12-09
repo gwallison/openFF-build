@@ -46,10 +46,10 @@ if construct_from_scratch:
 if do_end_tests:
     import core.Tests_of_final as tests
     print('\nStarting tests of final product')
-    print('  --  Creating test data set')
+    print('  --  Creating test set of FULL data')
     df = ana_set.Full_set(bulk_fn=bulk_fn,
                           pkl_when_creating=False).get_set()
-    tests.run_all_tests(df)
+    tests.final_test(df).run_all_tests()
 
 if make_output_files == True:
     print('\n\n -- Generating output data sets\n')
