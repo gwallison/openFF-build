@@ -45,6 +45,11 @@ analyses of chemical use in the fracking industry.
 
 
 ## CodeOcean Versions of Open-FF 
+
+** BETA **:
+
+- Added testing module to confirm consistency of final data sets.
+
 **Version 11 **:
 
 - Data downloaded from Dec. 4, 2021. 
