@@ -399,7 +399,7 @@ class Table_constructor():
         self.tables['disclosures'] = disc_df
         
         self.print_step(f'number of recs with calculated mass: {len(rec_df[rec_df.calcMass>0]):,}',1)                
-        
+    
             
     def gen_primarySupplier(self): 
         self.print_step('generating primarySupplier')
@@ -408,6 +408,7 @@ class Table_constructor():
                        'not a company','missing']
         rec = self.tables['chemrecs'].copy()
         rec = rec[~(rec.bgSupplier.isin(non_company))]
+        rec = rec[rec.bgSupplier.notna()] # added for non curated runs
         gb = rec.groupby('UploadKey')['bgSupplier'].agg(lambda x: x.value_counts().index[0])
         gb = gb.reset_index()
         gb.rename({'bgSupplier':'primarySupplier'},axis=1,inplace=True)
