@@ -40,7 +40,26 @@ class final_test():
         assert self.df[self.df.in_std_filtered].is_duplicate.sum()==0, 'is_duplicate==True records in filtered'
         assert self.df[self.df.in_std_filtered].skytruth_removed.sum()==0, 'skytruth_removed==True records in filtered'
         
+    def APINumber_test(self):
+        """confirms that all records have APINumbers, that the APINumbers are
+        consistent with the StateNumber and CountyNumber, that they are
+        strings (not integers) to maintain leading zeros, and they are all
+        14 characters long."""
+        self.print_stage('Confirm APINumber integrity')
+        assert self.df.APINumber.isna().sum()==0, 'There are some NaN in APINumber'
+        assert self.df.APINumber.dtype=='O', f'APINumber should be dtype "O", but is {self.df.APINumber.dtype}'
+        self.df['apilen'] = self.df.APINumber.str.len()
+        assert  self.df.apilen.max()==14, f'APINumber length max=={self.df.apilen.max()}'        
+        assert  self.df.apilen.min()==14, f'APINumber length min=={self.df.apilen.min()}'
+        
+        assert self.df.StateNumber.dtype=='int64', f'StateNumber be dtype "int64", but is {self.df.StateNumber.dtype}'
+        assert self.df.CountyNumber.dtype=='int64', f'CountyNumber be dtype "int64", but is {self.df.CountyNumber.dtype}'
+        
+        assert  (self.df.APINumber.str[:2].astype('int')==self.df.StateNumber).all(), 'APINumber[:2] do not match StateNumber'
+        assert  (self.df.APINumber.str[2:5].astype('int')==self.df.CountyNumber).all(), 'APINumber[2:5] do not match CountyNumber'
+        
     def run_all_tests(self):
         self.reckey_test()
         self.bgCAS_test()
         self.duplicate_test()
+        self.APINumber_test()
