@@ -133,13 +133,14 @@ def calc_mass(rec_df,disc_df):
 # =============================================================================
     disc_df['carrier_mass'] = disc_df.TotalBaseWaterVolume * disc_df.bgDensity
     disc_df['job_mass'] = disc_df.carrier_mass/(disc_df.carrier_percent/100)
-    # rec_has_it(rec_df, '5')
     
     rec_df = pd.merge(rec_df,disc_df[['UploadKey','job_mass']],
                       on='UploadKey',how='left',validate='m:1')
     rec_df['calcMass'] = (rec_df.PercentHFJob/100)*rec_df.job_mass
+
+    # a calcMass of ZERO is a non-disclosure, so set to NaN (added Dec 2021)
+    rec_df.calcMass = np.where(rec_df.calcMass==0,np.NaN,rec_df.calcMass)
     rec_df = rec_df.drop('job_mass',axis=1)
-    # rec_has_it(rec_df, '6')
     
     rec_df = calc_massComp(rec_df,disc_df)
     

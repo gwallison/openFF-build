@@ -50,6 +50,9 @@ analyses of chemical use in the fracking industry.
 
 - Added testing module to confirm consistency of final data sets.
 
+- Changed calcMass values of zero to NaN to indicate they are a non-disclosed 
+    quantity (Dec. 20,2021)
+
 **Version 11 **:
 
 - Data downloaded from Dec. 4, 2021. 
