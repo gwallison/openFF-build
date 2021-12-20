@@ -20,7 +20,7 @@ massComp_upper_limit = 0.1
 def calc_overall_percentages(rec_df,disc_df):
     # valid CAS here must include proprietary and carriers because they should be included in valid
     # percentages.
-    # rec_has_it(rec_df, '1')
+
     rec_df['is_valid_cas'] = rec_df.bgCAS.str[0].isin(['0','1','2','3','4',
                                                        '5','6','7','8','9'])
     rec_df.is_valid_cas = np.where(rec_df.bgCAS.isin(['proprietary','conflictingID']),
@@ -39,7 +39,8 @@ def calc_overall_percentages(rec_df,disc_df):
     allrecs.columns = ['UploadKey','total_percent_all_records']
     disc_df = pd.merge(disc_df,valid,on='UploadKey',how='left')
     disc_df = pd.merge(disc_df,allrecs,on='UploadKey',how='left')
-    # rec_has_it(rec_df, '1a')
+    # make sure disclosures without chem records are also marked as out of tolerance
+    disc_df.within_total_tolerance = disc_df.within_total_tolerance.fillna(False) 
     
     return disc_df
 
