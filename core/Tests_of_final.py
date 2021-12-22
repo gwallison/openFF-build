@@ -58,8 +58,18 @@ class final_test():
         assert  (self.df.APINumber.str[:2].astype('int')==self.df.StateNumber).all(), 'APINumber[:2] do not match StateNumber'
         assert  (self.df.APINumber.str[2:5].astype('int')==self.df.CountyNumber).all(), 'APINumber[2:5] do not match CountyNumber'
         
+    def calcMass_test(self):
+        """confirms that all records with non-zero calcMass meet the testing
+        criteria, such as within percentage tolerance and MIconsistency, and massComp
+        tolerance"""
+        self.print_stage('Confirm calcMass consistency')
+        assert (~(self.df.calcMass==0)).all(), 'No records should have a calcMass of exactly ZERO'
+        assert self.df[self.df.massCompFlag].calcMass.isna().all(), 'No calcMass when the massComp flag is True'
+        assert self.df[~self.df.within_total_tolerance].calcMass.isna().all(), 'All calcMass where percentage is out of tolerance should be NaN'        
+
     def run_all_tests(self):
         self.reckey_test()
         self.bgCAS_test()
         self.duplicate_test()
         self.APINumber_test()
+        self.calcMass_test()

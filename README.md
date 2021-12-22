@@ -43,15 +43,24 @@ By removing or cleaning the difficult data from this unique data source,
 we have produced a data set that can facilitate more in-depth 
 analyses of chemical use in the fracking industry.
 
+Find the github repositories of code at:
+- [openFF-build](https://github.com/gwallison/openFF-build)
+- [openFF-curation](https://github.com/gwallison/openFF-curation)
+
 
 ## CodeOcean Versions of Open-FF 
 
-** BETA **:
+** after v 11 BETA **:
 
 - Added testing module to confirm consistency of final data sets.
 
 - Changed calcMass values of zero to NaN to indicate they are a non-disclosed 
     quantity (Dec. 20,2021)
+    
+- in DataDictionary, fixed massCompFlag description to reflect that it is **True** when
+    massComp is **out of** tolerance.
+    
+- mark disclosures without chemical records as out-of-tolerance for to percent.
 
 **Version 11 **:
 
