@@ -62,6 +62,8 @@ Find the github repositories of code at:
     
 - mark disclosures without chemical records as out-of-tolerance for to percent.
 
+- add hash checks on repository files (Dec 29, 2021)
+
 **Version 11 **:
 
 - Data downloaded from Dec. 4, 2021. 
