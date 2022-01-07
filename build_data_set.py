@@ -32,8 +32,8 @@ build a file eventually ready for a repository.
 bulk_fn = 'currentData'        # name of raw archive file
 construct_from_scratch = True  # normally True
 do_end_tests = True            # normally True
-make_output_files = False      # True for final runs, adds lots of time
-do_abbrev = False              # normally False
+make_output_files = False      # True for final runs, adds lots of compile time
+do_abbrev = False              # normally False, for some testing purposes
 
 startfile = 0 # 0 for full set
 endfile = None  # None for no upper limit

@@ -48,8 +48,8 @@ def set_distance(row):
         return geodesic((row.Latitude,row.Longitude),
                         (row.refLatitude,row.refLongitude)).miles
     except: # problems? set to a big number
-        print(f'geodesic exception on {row.Latitude}, {row.Longitude};; {row.refLatitude}, {row.refLongitude}')
-        return 9999
+        #print(f'geodesic exception on {row.Latitude}, {row.Longitude};; {row.refLatitude}, {row.refLongitude}')
+        return 9999 # arbitrary big number; 
 
 
 def save_upload_ref(df):

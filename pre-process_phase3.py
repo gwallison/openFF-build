@@ -25,7 +25,7 @@ rawdf = pd.read_pickle('./tmp/carrier_df.pkl')[['CASNumber','IngredientName',
 
 _ = bc.make_casing(rawdf)
 
-s = f"""\n
+s = """\n
 The third stage of pre-processing has been completed.
 
 NEXT STEPS:
