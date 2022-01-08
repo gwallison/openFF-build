@@ -30,8 +30,10 @@ import io
 #import core.lsh_tools as lsh
 
 
-inputdir = './sources/CAS_ref_files/'
-outputdir = './sources/'  # store in sources because it is used from there
+# inputdir = './sources/CAS_ref_files/'
+# outputdir = './sources/'  # store in sources because it is used from there
+inputdir = 'c:/MyDocs/OpenFF/data/external_refs/CAS_ref_files/'
+outputdir = 'c:/MyDocs/OpenFF/data/transformed/'
 
 encod = 'utf-8'
 
@@ -223,7 +225,7 @@ def make_syn_list(rec,big):
     
 def make_CompTox_syn_file():
     raw_ct = []
-    refdir = './sources/CompTox_ref_files/'
+    refdir = 'c:/MyDocs/OpenFF/data/external_refs/CompTox_ref_files/'
     flst = os.listdir(refdir)
     for fn in flst:
         if fn[-4:] != '.csv':
@@ -239,10 +241,11 @@ def make_CompTox_syn_file():
             big = make_syn_list(row.IDENTIFIER,big)
         #print(i,len(big))
     
-    with open('./sources/CAS_synonyms_CompTox.csv','w',encoding='utf-8') as f:
+    with open('c:/MyDocs/OpenFF/data/transformed/CAS_synonyms_CompTox.csv','w',encoding='utf-8') as f:
         for i in big:
             f.write(i)
         
 if __name__ == '__main__':
-    create_CompTox_syn_lsh_pkl()    
+    #create_CompTox_syn_lsh_pkl()    
     #dic = processAll()
+    pass
