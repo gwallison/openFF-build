@@ -37,6 +37,7 @@ class Carrier_ID():
                 'carrier fluid ', 'base frac fluid', 'water',
                 'water / produced water', 'carrier ', 'base carrier',
                 'fracture fluid', 'frac base fluid']
+        self.proppants = ['14808-60-7','1302-93-8','1318-16-7','1302-74-5','1344-28-1','14464-46-1','7631-86-9','1302-76-7']
         self.merge_bgCAS()
         self.make_MI_fields()
         self.make_percent_sums()
@@ -152,9 +153,16 @@ class Carrier_ID():
         gbw.columns = ['UploadKey','percSumAll']
         gbwo = self.df[cond&self.df.is_valid_CAS].groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
         gbwo.columns = ['UploadKey','percSumValid']
+        gbwoSA = self.df[cond&(~(self.df.bgCAS=='sysAppMeta'))].groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
+        gbwoSA.columns = ['UploadKey','percNoSysApp']
         mg = pd.merge(gball,gbw,on=['UploadKey'],how='left')
-        
-        self.disc = pd.merge(mg,gbwo,on='UploadKey',how='left')
+        mg = pd.merge(mg,gbwo,on='UploadKey',how='left')
+        mg = pd.merge(mg,gbwoSA,on='UploadKey',how='left')
+        c1 = self.df.bgCAS.isin(self.proppants)
+        c2 = self.df.Purpose == 'Proppant'
+        gbprop = self.df[cond&(c1|c2)].groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
+        gbprop.columns = ['UploadKey','percProp']
+        self.disc = pd.merge(mg,gbprop,on='UploadKey',how='left')
         
     def addToProbDict(self,dic,UploadKeyList,problem):
         for upl in UploadKeyList:
@@ -170,12 +178,18 @@ class Carrier_ID():
         upkl = self.disc[self.disc.percSumValid>upper_tolerance].UploadKey.unique().tolist()
         d = self.addToProbDict(d, upkl, 3)
 
+        upkl = self.disc[self.disc.percNoSysApp>upper_tolerance].UploadKey.unique().tolist()
+        d = self.addToProbDict(d, upkl, 4)
+
         upkl = self.disc[self.disc.has_no_percHF].UploadKey.unique().tolist()
         d = self.addToProbDict(d, upkl, 2)
         
         upkl = self.disc[self.disc.has_no_valid_CAS].UploadKey.unique().tolist()
         d = self.addToProbDict(d, upkl, 0)
         
+        upkl = self.disc[self.disc.percProp>=50].UploadKey.unique().tolist()
+        d = self.addToProbDict(d, upkl, 5)
+
 # =============================================================================
 #         cond = (self.disc.percSumValid>0.95) & (self.disc.percSumValid<1.05)
 #         upkl = self.disc[cond].UploadKey.unique().tolist()
@@ -444,7 +458,7 @@ class Carrier_ID():
         t['is_water_carrier'] = ''
         ukt = t.UploadKey.unique().tolist()
         
-        print(f'New to-be-curated: total {len(t)}; with multiple records {len(t[t.multi_rec].UploadKey.unique())}')
+        print(f'Still to be curated: {len(t.UploadKey.unique())}')
         self.curdf.is_new = False
         self.curdf = pd.concat([self.curdf,t],sort=True)
         # add blank line to make excel curation easier
