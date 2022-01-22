@@ -291,7 +291,7 @@ class Table_constructor():
     def apply_carrier_tables(self):
         self.print_step('applying carrier table data')
         ukl = self.tables['disclosures'].UploadKey.unique().tolist()
-        #ikl = self.tables['chemrecs'].IngredientKey.unique().tolist()        
+        ikl = self.tables['chemrecs'].IngredientKey.unique().tolist()        
 
         recs = self.tables['chemrecs']
         disc = self.tables['disclosures']
@@ -317,18 +317,26 @@ class Table_constructor():
         disc = pd.merge(disc,gb,on='UploadKey',how='left')
 
         # to keep sub-runs from failing...
-        auto_carrier_df = auto_carrier_df[auto_carrier_df.UploadKey.isin(ukl)]
+        # if an IngredientKey is no longer
+        cond = ~(auto_carrier_df.IngredientKey.isin(ikl))
+        missing_uk = auto_carrier_df[cond].UploadKey.unique().tolist()
+        auto_carrier_df[auto_carrier_df.UploadKey.isin(missing_uk)].to_csv('./tmp/auto-carrier_UplKey_no_longer_present.csv')
+        self.print_step(f'Number of auto disclosures without current matches: {len(missing_uk)}',2)
+        auto_carrier_df = auto_carrier_df[~(auto_carrier_df.UploadKey.isin(missing_uk))]
         self.print_step(f'Auto-detected carriers: {len(auto_carrier_df)}',1)
+        # save list of auto carriers no longer in data set
 
         # get the auto_carrier label 
-        uk = auto_carrier_df.UploadKey.tolist()
+        uk = auto_carrier_df.UploadKey.unique().tolist()
         ik = auto_carrier_df.IngredientKey.tolist()
+
+        
         disc.loc[uk,'has_water_carrier'] = True
         disc.loc[uk,'carrier_status'] = 'auto-detected'
         try:
             recs.loc[ik,'is_water_carrier']  = True
         except:
-            print('***ERROR applying is_water_carrier: ignore if this is a test mode')
+            print('***ERROR applying is_water_carrier: SOMETHING IS WRONG')
         
         # **** disclosures with problems preventing carrier detection
         prob_carrier_df = pd.read_csv(self.trans_dir+'carrier_list_prob.csv',
