@@ -1,7 +1,7 @@
 *.zip
 *.pyc
 .ipynb_checkpoints/*.*
-updating/.ipynb_checkpoints/*.*
+*/.ipynb_checkpoints/*.*
 website_gen/.ipynb_checkpoints/*.*
 out/
 data/
