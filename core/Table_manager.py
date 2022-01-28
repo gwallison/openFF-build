@@ -42,7 +42,7 @@ class Table_constructor():
 
         self.ST_without_pdf = pd.read_csv(self.trans_dir+'ST_api_without_pdf.csv',
                                           dtype={'api10':'str'})
-        
+        self.ST_filtered_UploadKeys = pd.read_csv(self.trans_dir+'skytruth_disclosures_to_keep_after_filtering.csv')
         self.location_ref_fn = self.trans_dir+'uploadKey_ref.csv'
         self.loc_ref_df = pd.read_csv(self.location_ref_fn,quotechar='$',
                                       encoding='utf-8')
@@ -265,6 +265,8 @@ class Table_constructor():
         st_removed_api10 = self.ST_without_pdf.api10.unique().tolist()
         stupk = df[df.api10.isin(st_removed_api10)].UploadKey.unique().tolist()
         df['skytruth_removed'] = df.UploadKey.isin(stupk)
+        stOK = df.UploadKey.isin(self.ST_filtered_UploadKeys.UploadKey.tolist())
+        df.skytruth_removed = np.where((cond&~(stOK)),True,df.skytruth_removed)        
         # removed skytruth disclosures are lumped in the 'is_duplicate' group
 
         df['is_duplicate'] = df.dup_disclosures | df.redund_skytruth | df.duplicate_skytruth | df.skytruth_removed
@@ -276,7 +278,8 @@ class Table_constructor():
         self.print_step(f'n duplicate disclosures within v2 and v3: {df.dup_disclosures.sum()}',1)
         self.print_step(f'n redundant SkyTruth disclosures: {df.redund_skytruth.sum()}',1)
         self.print_step(f'n duplicate SkyTruth disclosures: {df.duplicate_skytruth.sum()}',1)
-        self.print_step(f'n SkyTruth disclosures deleted from pdf library: {df.skytruth_removed.sum()}',1)        
+        self.print_step(f'n SkyTruth disclosures deleted from pdf library: {len(stupk)}',1)        
+        self.print_step(f'final n of SkyTruth disclosures included: {len(df[(~df.is_duplicate)&cond].UploadKey.unique())}',1)
         self.print_step(f'n is_duplicate: {df.is_duplicate.sum()}',1)
         
 # =============================================================================
