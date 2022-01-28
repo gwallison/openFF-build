@@ -38,6 +38,7 @@ class Carrier_ID():
                 'water / produced water', 'carrier ', 'base carrier',
                 'fracture fluid', 'frac base fluid']
         self.proppants = ['14808-60-7','1302-93-8','1318-16-7','1302-74-5','1344-28-1','14464-46-1','7631-86-9','1302-76-7']
+        self.gasses = ['7727-37-9','124-38-9']
         self.merge_bgCAS()
         self.make_MI_fields()
         self.make_percent_sums()
@@ -162,7 +163,10 @@ class Carrier_ID():
         c2 = self.df.Purpose == 'Proppant'
         gbprop = self.df[cond&(c1|c2)].groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
         gbprop.columns = ['UploadKey','percProp']
-        self.disc = pd.merge(mg,gbprop,on='UploadKey',how='left')
+        mg = pd.merge(mg,gbprop,on='UploadKey',how='left')
+        gbgas = self.df[self.df.bgCAS.isin(self.gasses)].groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
+        gbgas.columns = ['UploadKey','percGas']
+        self.disc = pd.merge(mg,gbgas,on='UploadKey',how='left')
         
     def addToProbDict(self,dic,UploadKeyList,problem):
         for upl in UploadKeyList:
@@ -190,6 +194,19 @@ class Carrier_ID():
         upkl = self.disc[self.disc.percProp>=50].UploadKey.unique().tolist()
         d = self.addToProbDict(d, upkl, 5)
 
+        upkl = self.disc[self.disc.percSumAll<90].UploadKey.unique().tolist()
+        d = self.addToProbDict(d, upkl, 6)
+
+        # if gasses are dominant        
+        upkl = self.disc[self.disc.percGas>=50].UploadKey.unique().tolist()
+        d = self.addToProbDict(d, upkl, 7)
+        
+# =============================================================================
+#         # if MI not ok - when something is wrong with MI, can't trust other numbers.
+#         upkl = self.disc[~self.disc.MI_inconsistent].UploadKey.unique().tolist()
+#         d = self.addToProbDict(d, upkl, 8)
+#         
+# =============================================================================
 # =============================================================================
 #         cond = (self.disc.percSumValid>0.95) & (self.disc.percSumValid<1.05)
 #         upkl = self.disc[cond].UploadKey.unique().tolist()
@@ -395,6 +412,70 @@ class Carrier_ID():
         
         return slic
 
+    def auto_set_6(self):
+        """ Similar to set 1;
+            - bgCAS is ambiguousID
+            - single record with a carrier purpose
+            - IngredientName is either in 'wst' list or has "water" in it
+            - 50% < %HFJob < 100% (single 100% records not ok) 
+        """
+        
+        t = self.df.copy()
+        t['has_purp'] = t.Purpose.str.strip().str.lower().isin(self.wlst)
+        gbp = t.groupby('UploadKey',as_index=False)['has_purp'].sum()
+        t = t.drop('has_purp',axis=1)
+        t = pd.merge(t,gbp,on='UploadKey',how='left')
+        t.TradeName = t.TradeName.str.lower()
+        t.TradeName.fillna('empty',inplace=True)
+        c1 = t.has_purp==1  # only 1 record with Purpose in wlst
+        c2 = t.bgCAS == 'ambiguousID'  # must be water
+        c3 = (t.PercentHFJob >= 50)&(t.PercentHFJob < 100)  # should be at least this amount
+        c4 =  t.Purpose.str.strip().str.lower().isin(self.wlst)
+        c5 = t.IngredientName.isin(self.wlst)|t.IngredientName.str.contains('water')
+        c6 = t.TradeName.isin(self.wlst)|t.TradeName.str.contains('water')
+        c6 = (~(t.TradeName.str.contains('slick'))) & c6 # prevent 'slickwater' from counting as 'water'
+        slic = t[c1&c2&c3&c4&c5&c6][['IngredientKey','UploadKey','CASNumber',
+                            'IngredientName','Purpose','TradeName',
+                             'PercentHFJob','bgCAS','maybe_water_by_MI','dens_test',
+                           'MassIngredient','TotalBaseWaterVolume']].copy()
+        slic['auto_carrier_type'] = 's6'
+        slic['is_new'] = True
+        #print(f'Disclosure is in set: {len(slic[slic.UploadKey=="f961a561-edd3-4c9e-8b38-3ba58d2b73c9"])}')
+        print(f"Auto_set_6: new {len(slic)}, maybe_water_by_MI? {len(slic[slic.maybe_water_by_MI=='yes'])}, not kept (MIdensity out of range): {len(slic[slic.maybe_water_by_MI=='no'])}")
+        slic = slic[~(slic.maybe_water_by_MI=='no')] # don't keep those flagged disclosures
+        
+        return slic
+
+    def auto_set_7(self):
+        """ Like set_1, but for salted water:
+            - looking only at records with valid CAS numbers
+            - single record with a carrier purpose
+            - CASNumber is either 7447-40-7 or 7647-14-5
+            - 50% < %HFJob < 100% (single 100% records not ok) 
+        """
+        
+        t = self.df[self.df.is_valid_CAS].copy()
+        t['has_purp'] = t.Purpose.str.strip().str.lower().isin(self.wlst)
+        gbp = t.groupby('UploadKey',as_index=False)['has_purp'].sum()
+        t = t.drop('has_purp',axis=1)
+        t = pd.merge(t,gbp,on='UploadKey',how='left')
+    
+        c1 = t.has_purp==1  # only 1 record with Purpose in wlst
+        c2 = t.bgCAS.isin(['7447-40-7','7647-14-5'])  # kcl or nacl
+        c3 = (t.PercentHFJob >= 50)&(t.PercentHFJob < 100)  # should be at least this amount
+        c4 =  t.Purpose.str.strip().str.lower().isin(self.wlst)
+        slic = t[c1&c2&c3&c4][['IngredientKey','UploadKey','CASNumber',
+                            'IngredientName','Purpose','TradeName',
+                             'PercentHFJob','bgCAS','maybe_water_by_MI','dens_test',
+                           'MassIngredient','TotalBaseWaterVolume']].copy()
+        slic['auto_carrier_type'] = 's7'
+        slic['is_new'] = True
+        #print(f'Disclosure is in set: {len(slic[slic.UploadKey=="f961a561-edd3-4c9e-8b38-3ba58d2b73c9"])}')
+        print(f"Auto_set_7: new {len(slic)}, maybe_water_by_MI? {len(slic[slic.maybe_water_by_MI=='yes'])}, not kept (MIdensity out of range): {len(slic[slic.maybe_water_by_MI=='no'])}")
+        slic = slic[~(slic.maybe_water_by_MI=='no')] # don't keep those flagged disclosures
+        
+        return slic
+
     def check_for_auto_disc(self):
         results = []
         res = self.auto_set_1()
@@ -414,6 +495,14 @@ class Carrier_ID():
         results.append(res)
 
         res = self.auto_set_5()
+        self.remove_disclosures(res)
+        results.append(res)
+
+        res = self.auto_set_6()
+        self.remove_disclosures(res)
+        results.append(res)
+
+        res = self.auto_set_7()
         self.remove_disclosures(res)
         results.append(res)
 
@@ -451,8 +540,10 @@ class Carrier_ID():
         
         
     def save_curation_candidates(self):
-        t = self.df[self.df.PercentHFJob>=5].copy()
-        t['multi_rec'] = t.UploadKey.duplicated(keep=False)
+        c1 = self.df.Purpose.str.strip().str.lower().isin(self.wlst)
+        c2 = self.df.PercentHFJob>=5
+        t = self.df[c1|c2].copy()
+        #t['multi_rec'] = t.UploadKey.duplicated(keep=False)
         t['is_new'] = True
         t['cur_carrier_status'] = ''
         t['is_water_carrier'] = ''
@@ -464,9 +555,10 @@ class Carrier_ID():
         # add blank line to make excel curation easier
         self.curdf = pd.concat([self.curdf,pd.DataFrame({'UploadKey':ukt})],sort=True)
         self.curdf = self.curdf.sort_values(['UploadKey','PercentHFJob'],ascending=False)
-        self.curdf[['UploadKey','IngredientKey','is_new','multi_rec','is_valid_CAS',
+        self.curdf[['UploadKey','IngredientKey','is_new','is_valid_CAS',
                     'TotalBaseWaterVolume','CASNumber','bgCAS','IngredientName',
-                    'Purpose','PercentHFJob','is_water_carrier',
+                    'Purpose','TradeName','PercentHFJob','percSumValid','percSumAll',
+                    'maybe_water_by_MI','is_water_carrier',
                     'cur_carrier_status','first_date',
                     'change_date','change_comment']].to_csv('./tmp/carrier_list_curated_NEW.csv',quotechar='$',
                           encoding='utf-8',index=False)
