@@ -46,11 +46,14 @@ analyses of chemical use in the fracking industry.
 Find the github repositories of code at:
 - [openFF-build](https://github.com/gwallison/openFF-build)
 - [openFF-curation](https://github.com/gwallison/openFF-curation)
-
+- [openFF-raw](https://github.com/gwallison/openFF-raw)
+- [openFF-catalog](https://github.com/gwallison/openFF-catalog)
 
 ## CodeOcean Versions of Open-FF 
 
-** after v 11 BETA **:
+**Version 12 **:
+
+- Data downloaded from FracFocus on **********
 
 - Added testing module to confirm consistency of final data sets.
 
@@ -60,9 +63,21 @@ Find the github repositories of code at:
 - in DataDictionary, fixed massCompFlag description to reflect that it is **True** when
     massComp is **out of** tolerance.
     
-- mark disclosures without chemical records as out-of-tolerance for to percent.
+- mark disclosures without chemical records as out-of-tolerance for total_percent.
 
 - add hash checks on repository files (Dec 29, 2021)
+
+- add new filters (4,5,6) to find problem disclosures for mass calculation (Jan 15-28, 2022)
+
+- add new carrier detection sets: s6,s7,s8 and s9. (Jan 28, 2022)
+
+- incorporate filter of SkyTruth disclosures that we have detected as changed since
+    originally scraped. The removed disclosures are still available in the Full set,
+    but not the filtered set. (Jan 26, 2022)
+    
+- add the raw field "IngredientComment" back into the Full data set for proprietary
+    claim analysis. (Jan 30, 2022) 
+
 
 **Version 11 **:
 
