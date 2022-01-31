@@ -476,6 +476,79 @@ class Carrier_ID():
         
         return slic
 
+    def auto_set_8(self):
+        """ Many skytruth carriers have this profile;
+            - bgCAS is ambiguousID or 7732-18-5
+            - IngredientName is MISSING
+            - Purpose is "unrecorded purpose"
+            - TradeName has either "water" or "brine"
+            - can be one or two records in each disclosure
+            - 50% < sum of %HFJob < 100%  
+        """
+        
+        t = self.df.copy()
+        #gbp = t.groupby('UploadKey',as_index=False)['has_unrec_purp'].sum()
+        #t = t.drop('num_unrec_purp',axis=1)
+        #t = pd.merge(t,gbp,on='UploadKey',how='left')
+        t.TradeName = t.TradeName.str.lower()
+        t.TradeName.fillna('empty',inplace=True)
+        c1 = t.Purpose == 'unrecorded purpose'
+        c2 = t.bgCAS.isin(['ambiguousID','7732-18-5'])         
+        c3 = t.IngredientName=='MISSING'
+        c4 = t.TradeName.str.contains('water')
+        c4 = (~(t.TradeName.str.contains('slick'))) & c4 # prevent 'slickwater' from counting as 'water'
+        tt = t[c1&c2&c3&c4].copy()
+        gb = tt.groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
+        gb.columns = ['UploadKey','unrec_percent']
+        tt = pd.merge(tt,gb,on='UploadKey',how='left')
+        c5 = (tt.unrec_percent >= 50)&(tt.unrec_percent< 100)  # should be at least this amount
+        slic = tt[c5][['IngredientKey','UploadKey','CASNumber',
+                            'IngredientName','Purpose','TradeName',
+                             'PercentHFJob','bgCAS','maybe_water_by_MI','dens_test',
+                           'MassIngredient','TotalBaseWaterVolume']].copy()
+        slic['auto_carrier_type'] = 's8'
+        slic['is_new'] = True
+        #print(f'Disclosure is in set: {len(slic[slic.UploadKey=="f961a561-edd3-4c9e-8b38-3ba58d2b73c9"])}')
+        print(f"Auto_set_8: new {len(slic)}, maybe_water_by_MI? {len(slic[slic.maybe_water_by_MI=='yes'])}, not kept (MIdensity out of range): {len(slic[slic.maybe_water_by_MI=='no'])}")
+        slic = slic[~(slic.maybe_water_by_MI=='no')] # don't keep those flagged disclosures
+        
+        return slic
+
+    def auto_set_9(self):
+        """ Many skytruth carriers have this profile;
+            - bgCAS is ambiguousID or 7732-18-5
+            - IngredientName is MISSING
+            - Purpose is one of the standard carrier words or phrases
+            - TradeName has either "water" or "brine"
+            - can be one or two records in each disclosure
+            - 50% < sum of %HFJob < 100%  
+        """
+        
+        t = self.df.copy()
+        t.TradeName = t.TradeName.str.lower()
+        t.TradeName.fillna('empty',inplace=True)
+        c1 = t.Purpose.str.strip().str.lower().isin(self.wlst) 
+        c2 = t.bgCAS.isin(['ambiguousID','7732-18-5'])         
+        c3 = t.IngredientName=='MISSING'
+        c4 = t.TradeName.str.contains('water')
+        c4 = (~(t.TradeName.str.contains('slick'))) & c4 # prevent 'slickwater' from counting as 'water'
+        tt = t[c1&c2&c3&c4].copy()
+        gb = tt.groupby('UploadKey',as_index=False)['PercentHFJob'].sum()
+        gb.columns = ['UploadKey','unrec_percent']
+        tt = pd.merge(tt,gb,on='UploadKey',how='left')
+        c5 = (tt.unrec_percent >= 50)&(tt.unrec_percent< 100)  # should be at least this amount
+        slic = tt[c5][['IngredientKey','UploadKey','CASNumber',
+                            'IngredientName','Purpose','TradeName',
+                             'PercentHFJob','bgCAS','maybe_water_by_MI','dens_test',
+                           'MassIngredient','TotalBaseWaterVolume']].copy()
+        slic['auto_carrier_type'] = 's9'
+        slic['is_new'] = True
+        #print(f'Disclosure is in set: {len(slic[slic.UploadKey=="f961a561-edd3-4c9e-8b38-3ba58d2b73c9"])}')
+        print(f"Auto_set_9: new {len(slic)}, maybe_water_by_MI? {len(slic[slic.maybe_water_by_MI=='yes'])}, not kept (MIdensity out of range): {len(slic[slic.maybe_water_by_MI=='no'])}")
+        slic = slic[~(slic.maybe_water_by_MI=='no')] # don't keep those flagged disclosures
+        
+        return slic
+
     def check_for_auto_disc(self):
         results = []
         res = self.auto_set_1()
@@ -503,6 +576,14 @@ class Carrier_ID():
         results.append(res)
 
         res = self.auto_set_7()
+        self.remove_disclosures(res)
+        results.append(res)
+
+        res = self.auto_set_8()
+        self.remove_disclosures(res)
+        results.append(res)
+
+        res = self.auto_set_9()
         self.remove_disclosures(res)
         results.append(res)
 
