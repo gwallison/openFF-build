@@ -181,7 +181,7 @@ class Table_constructor():
                     'Supplier','Purpose','TradeName',
                     'PercentHighAdditive','MassIngredient',
                     'ingKeyPresent','reckey','IngredientKey',
-                    'density_from_comment']].copy()
+                    'IngredientComment','density_from_comment']].copy()
         ct.na_check(df,txt='assembling chem_rec 1')
         
         df.Supplier = df.Supplier.fillna('MISSING')
