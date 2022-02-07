@@ -35,10 +35,10 @@ do_end_tests = True            # normally True
 make_output_files = False      # True for final runs, adds lots of compile time
 do_abbrev = False              # normally False, for some testing purposes
 
-startfile = 0 # 0 for full set
+startfile =  0 # 0 for full set
 endfile = None  # None for no upper limit
-inc_skyTruth = True
-#inc_skyTruth = False
+inc_skyTruth = True            # normally True, False for quicker runs
+#inc_skyTruth = False         
 
 if (startfile!=0) | (endfile!=None) | (inc_skyTruth==False):
     # test mode does not overwrite production mode pickles

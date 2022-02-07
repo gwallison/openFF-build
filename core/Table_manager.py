@@ -323,7 +323,7 @@ class Table_constructor():
         # if an IngredientKey is no longer
         cond = ~(auto_carrier_df.IngredientKey.isin(ikl))
         missing_uk = auto_carrier_df[cond].UploadKey.unique().tolist()
-        auto_carrier_df[auto_carrier_df.UploadKey.isin(missing_uk)].to_csv('./tmp/auto-carrier_UplKey_no_longer_present.csv')
+        #auto_carrier_df[auto_carrier_df.UploadKey.isin(missing_uk)].to_csv('./tmp/auto-carrier_UplKey_no_longer_present.csv')
         self.print_step(f'Number of auto disclosures without current matches: {len(missing_uk)}',2)
         auto_carrier_df = auto_carrier_df[~(auto_carrier_df.UploadKey.isin(missing_uk))]
         self.print_step(f'Auto-detected carriers: {len(auto_carrier_df)}',1)

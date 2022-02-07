@@ -113,8 +113,7 @@ def add_CompTox_refs(df,sources='./sources/',
     df.is_on_DWSHA = np.where(df.is_on_DWSHA=='Y',True,False)
     df.DTXSID = np.where(df.DTXSID=='-',np.NaN,df.DTXSID)
     return df
-    
-    
+       
 def add_PFAS_ref(df,sources='./sources/',
                      pfas_fn = 'EPA_PFAS_list_simplified.csv'):
     #print('Adding SDWA/CWA lists to CAS table')

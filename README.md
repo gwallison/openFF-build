@@ -53,7 +53,7 @@ Find the github repositories of code at:
 
 **Version 12 **:
 
-- Data downloaded from FracFocus on **********
+- Data downloaded from FracFocus on Feb. 5, 2022
 
 - Added testing module to confirm consistency of final data sets.
 
