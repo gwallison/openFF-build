@@ -12,12 +12,6 @@ Change the file handles at the top of this code to appropriate directories.
 """
 #### -----------   File handles  -------------- ####
 
-# =============================================================================
-# ####### uncomment below for local runs
-# outdir = './out/'
-# sources = './sources/'
-# tempfolder = './tmp/'
-# =============================================================================
 
 ####### uncomment below for local runs
 import build_common
@@ -35,7 +29,6 @@ tempfolder = './tmp/'
 
 ####### zip input files (local default)
 bulk_fn = 'currentData'
-stfilename = 'sky_truth_final'
 
 
 #### ----------    end File Handles ----------  ####
@@ -50,7 +43,7 @@ import core.Table_manager as c_tab
 
 class Data_set_constructor():
     def __init__(self, bulk_fn=bulk_fn,const_mode='TEST',
-                 stfilename=stfilename,tempfolder=tempfolder,
+                 tempfolder=tempfolder,
                  sources=sources,outdir=outdir,
                  make_files=make_files,
                  startfile=0,endfile=None,
@@ -60,7 +53,6 @@ class Data_set_constructor():
         self.sources = sources
         self.tempfolder = tempfolder
         self.zfilename = self.sources+'bulk_data/'+bulk_fn+'.zip'
-        self.stfilename = self.sources+'bulk_data/'+stfilename+'.zip'
         self.make_files=make_files
         self.abbreviated = abbreviated # used to do partial constructions
         self.startfile= startfile
@@ -90,12 +82,11 @@ class Data_set_constructor():
         self._banner('PROCESS RAW DATA FROM SCRATCH')
         self._banner('Reading Bulk Data')
         raw_df = rff.Read_FF(zname=self.zfilename,
-                             skytruth_name=self.stfilename,
                              sources = self.sources,
                              outdir = self.outdir,
                              startfile=self.startfile,
                              endfile=self.endfile).\
-                                  import_all(inc_skyTruth=inc_skyTruth)
+                                  import_all()
         self._banner('Table_manager')
         mark_missing = ['CASNumber','IngredientName','Supplier','OperatorName']
         for col in mark_missing:
@@ -106,19 +97,15 @@ class Data_set_constructor():
         
         return tab_const
 
-    def get_full_raw_df(self,inc_skyTruth=True):
-        #tab_const = c_tab.Table_constructor(pkldir=self.picklefolder)
-        #self.initialize_dir(self.picklefolder)
+    def get_full_raw_df(self):
         self._banner('PROCESS RAW DATA FROM SCRATCH')
         self._banner('Reading Bulk Data')
         raw_df = rff.Read_FF(zname=self.zfilename,
-                             skytruth_name=self.stfilename,
                              sources = self.sources,
                              outdir = self.outdir,
                              startfile=self.startfile,
                              endfile=self.endfile).\
-                                  import_all(inc_skyTruth=inc_skyTruth)
-        #self._banner('Table_manager')
+                                  import_all()
         mark_missing = ['CASNumber','IngredientName','Supplier','OperatorName']
         for col in mark_missing:
             raw_df[col].fillna('MISSING',inplace=True)
@@ -126,18 +113,12 @@ class Data_set_constructor():
         
 
 
-    def create_quick_set(self,inc_skyTruth=True):
+    def create_quick_set(self):
         """ generates a set of mostly of raw values - used mostly
         in pre-process screening. """
         
         tab_const = c_tab.Construct_tables(pkldir=self.picklefolder)
         raw_df = rff.Read_FF(zname=self.zfilename,
                              startfile=self.startfile,
-                             endfile=self.endfile,
-                             skytruth_name=self.stfilename).import_all(inc_skyTruth=inc_skyTruth)
-# =============================================================================
-#         raw_df = tab_const.add_indexes_to_full(raw_df)
-#         tab_const.build_tables(raw_df)
-#         raw_df = None
-# =============================================================================
+                             endfile=self.endfile).import_all()
         return tab_const

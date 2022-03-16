@@ -20,8 +20,7 @@ filter out any of the original raw FracFocus records allowing
 the user to construct their own appropriate set (by using the flags, etc.).  
 
 Portions of the raw bulk data that are filtered out include: 
-- fracking events with no chemical records (mostly 2011-May 2013; but are 
-    replaced with the SkyTruth archive).
+- fracking events with no chemical records (mostly 2011-May 2013
 - fracking events with multiple entries (and no indication which entries 
     are correct).
 - chemical records that are identified as redundant within the event.
@@ -51,7 +50,35 @@ Find the github repositories of code at:
 
 ## CodeOcean Versions of Open-FF 
 
-**Version 12 **:
+**Beta of version 13**:
+
+- Current download: Feb 19, 2022
+
+- assorted changes to casing_curated file.
+
+** UPDATE TO VERSION 12 (March 2022) **
+
+- Remove the "SkyTruth archive" from the standard_filtered data sets. In previous
+    versions, this archive has been used to fill in the chemical records for
+    disclosures between 2011-May 2013, because the FracFocus bulk download
+    does not report chemical records for that period, even though the chemicals
+    are reported in the PDF files available at the web site.  We are removing the
+    archive because it has come to our attention that those data are occasionally
+    not a good representation of currently available PDF files on the FracFocus
+    website.  This is apparently due largely to changes to the PDF files **after**
+    they were published and SkyTruth downloaded them.  While such changes are
+    not announced or recorded in any way to the public, they are premitted by 
+    FracFocus.  It appears that the only way that the public can tell that such
+    changes have been made is to manually compare new versions to older versions,
+    which is a very large task for big-picture analysis.
+
+- Note that although the SkyTruth archive will no longer be in the "standard filtered"
+    data set, those data are still available in the "full" data set which includes
+    all other available records such as duplicates.  Use the SkyTruth data with care 
+    and remember that some records do not reflect what the industy claims as 
+    the proper published records.
+
+**Version 12 ** :
 
 - Data downloaded from FracFocus on Feb. 5, 2022
 

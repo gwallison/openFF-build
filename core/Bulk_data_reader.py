@@ -8,6 +8,7 @@ Created on Wed Apr 17 10:15:03 2019
 This module is used to read all the raw data in from a FracFocus zip 
 of CSV files; and the preprocessed SkyTruth archive.
 
+3/2022 - Remove Skytruth
 """
 import zipfile
 import re
@@ -20,13 +21,11 @@ import core.cas_tools as ct
 class Read_FF():
     
     def __init__(self,zname='./sources/bulk_data/currentData.zip',
-                 skytruth_name='./sources/bulk_data/sky_truth_final.zip',
                  outdir = './out/', sources = './sources/',
                  tab_const=None,
                  # start and endfile allows user to import a subset of whole
                  startfile=0, endfile=None):
         self.zname = zname
-        self.stname = skytruth_name
         self.outdir = outdir
         self.sources = sources
         self.missing_values = self.getMissingList()
@@ -178,92 +177,87 @@ class Read_FF():
         final = self.clean_cols(final,cols=varsToKeep)
         return final
 
-    def import_skytruth_as_str(self,varsToKeep=['UploadKey','APINumber',
-                                           'IngredientName','CASNumber',
-                                           'StateName','StateNumber',
-                                           'CountyName','CountyNumber',
-                                           'JobEndDate',
-                                           'Latitude','Longitude',
-                                           'OperatorName',
-                                           'PercentHFJob','PercentHighAdditive',
-                                           'Purpose','Supplier','TVD',
-                                           'TotalBaseWaterVolume',
-                                           'TradeName','WellName']):
-        """
-        Like import_raw_as_str, but for SkyTruth data        
-        """
-        dtypes = {}
-        for v in varsToKeep:
-            dtypes[v] = 'str'
-        with zipfile.ZipFile(self.stname) as z:
-            fn = z.namelist()[0]
-            with z.open(fn) as f:
-                print(f' -- processing {fn}')
-                t = pd.read_csv(f,low_memory=False,
-                                quotechar='$',quoting=csv.QUOTE_ALL,
-                                usecols=varsToKeep,
-                                dtype=dtypes,
-                                na_values=self.missing_values)
-                t['raw_filename'] = 'SkyTruth'
-        t = self.clean_cols(t,cols=varsToKeep)
-        return t
+    # def import_skytruth_as_str(self,varsToKeep=['UploadKey','APINumber',
+    #                                        'IngredientName','CASNumber',
+    #                                        'StateName','StateNumber',
+    #                                        'CountyName','CountyNumber',
+    #                                        'JobEndDate',
+    #                                        'Latitude','Longitude',
+    #                                        'OperatorName',
+    #                                        'PercentHFJob','PercentHighAdditive',
+    #                                        'Purpose','Supplier','TVD',
+    #                                        'TotalBaseWaterVolume',
+    #                                        'TradeName','WellName']):
+    #     """
+    #     Like import_raw_as_str, but for SkyTruth data        
+    #     """
+    #     dtypes = {}
+    #     for v in varsToKeep:
+    #         dtypes[v] = 'str'
+    #     with zipfile.ZipFile(self.stname) as z:
+    #         fn = z.namelist()[0]
+    #         with z.open(fn) as f:
+    #             print(f' -- processing {fn}')
+    #             t = pd.read_csv(f,low_memory=False,
+    #                             quotechar='$',quoting=csv.QUOTE_ALL,
+    #                             usecols=varsToKeep,
+    #                             dtype=dtypes,
+    #                             na_values=self.missing_values)
+    #             t['raw_filename'] = 'SkyTruth'
+    #     t = self.clean_cols(t,cols=varsToKeep)
+    #     return t
     
     
-    def import_skytruth(self):
-        """
-        This function pulls in a pre-processed file with the Skytruth data.
-        The pre-processing reformated the Skytruth data to match the FracFocus
-        bulk download format, to allow merging.  Note, however, that we do NOT
-        link the FF 'placeholder' events for FFVersion 1 to these skytruth data
-        Those place holders are essentially removed from the working set
-        because they have no chemical records associated.  While those
-        placeholders have metadata that is important, we will rely on the Skytruth
-        versions of that metatdata (which should be identical).
+    # def import_skytruth(self):
+    #     """
+    #     This function pulls in a pre-processed file with the Skytruth data.
+    #     The pre-processing reformated the Skytruth data to match the FracFocus
+    #     bulk download format, to allow merging.  Note, however, that we do NOT
+    #     link the FF 'placeholder' events for FFVersion 1 to these skytruth data
+    #     Those place holders are essentially removed from the working set
+    #     because they have no chemical records associated.  While those
+    #     placeholders have metadata that is important, we will rely on the Skytruth
+    #     versions of that metatdata (which should be identical).
         
-        The pdfs from which skytruth scraped only reported 10 digits in the 
-        APINumber field.  However, the bulk download reports 14 digits. So for
-        the output of this function, we append four X's to fill out the numbers.
-        It may make sense to get that piece of metadata from the bulk download.
+    #     The pdfs from which skytruth scraped only reported 10 digits in the 
+    #     APINumber field.  However, the bulk download reports 14 digits. So for
+    #     the output of this function, we append four X's to fill out the numbers.
+    #     It may make sense to get that piece of metadata from the bulk download.
         
-        """
-        with zipfile.ZipFile(self.stname) as z:
-            fn = z.namelist()[0]
-            with z.open(fn) as f:
-                print(f' -- processing {fn}')
-                t = pd.read_csv(f,low_memory=False,
-                                quotechar='$',quoting=csv.QUOTE_ALL,
-                                dtype={'APINumber':'str'},
-                                na_values=self.missing_values)
-                t['raw_filename'] = 'SkyTruth'
-                t['record_flags'] = 'Y'  #skytruth flag
-                t['data_source'] = 'SkyTruth'
-                cond1 = (t.APINumber.str.len()==9)|(t.APINumber.str.len()==10)
-                t.record_flags = np.where(cond1,
-                                          t.record_flags+'-T',
-                                          t.record_flags)
-                t.APINumber = np.where(t.APINumber.str.len()==13, #shortened state numbers
-                                       '0'+ t.APINumber,
-                                       t.APINumber)
-                t.APINumber = np.where(t.APINumber.str.len()==9, #shortened state numbers
-                                       '0'+ t.APINumber + 'XXXX',
-                                       t.APINumber)
-                t.APINumber = np.where(t.APINumber.str.len()==10,
-                                       t.APINumber + 'XXXX',
-                                       t.APINumber)
-                t['ingKeyPresent'] = True  # all SkyTruth events have chem records
-        t = self.clean_cols(t)
-        t['str_idx'] =  t.index.astype(int).astype('str')
-        t['IngredientKey'] = t.UploadKey.str[:]+'::'+ t.str_idx
-        t.drop('str_idx',axis=1,inplace=True)
-        return t
+    #     """
+    #     with zipfile.ZipFile(self.stname) as z:
+    #         fn = z.namelist()[0]
+    #         with z.open(fn) as f:
+    #             print(f' -- processing {fn}')
+    #             t = pd.read_csv(f,low_memory=False,
+    #                             quotechar='$',quoting=csv.QUOTE_ALL,
+    #                             dtype={'APINumber':'str'},
+    #                             na_values=self.missing_values)
+    #             t['raw_filename'] = 'SkyTruth'
+    #             t['record_flags'] = 'Y'  #skytruth flag
+    #             t['data_source'] = 'SkyTruth'
+    #             cond1 = (t.APINumber.str.len()==9)|(t.APINumber.str.len()==10)
+    #             t.record_flags = np.where(cond1,
+    #                                       t.record_flags+'-T',
+    #                                       t.record_flags)
+    #             t.APINumber = np.where(t.APINumber.str.len()==13, #shortened state numbers
+    #                                    '0'+ t.APINumber,
+    #                                    t.APINumber)
+    #             t.APINumber = np.where(t.APINumber.str.len()==9, #shortened state numbers
+    #                                    '0'+ t.APINumber + 'XXXX',
+    #                                    t.APINumber)
+    #             t.APINumber = np.where(t.APINumber.str.len()==10,
+    #                                    t.APINumber + 'XXXX',
+    #                                    t.APINumber)
+    #             t['ingKeyPresent'] = True  # all SkyTruth events have chem records
+    #     t = self.clean_cols(t)
+    #     t['str_idx'] =  t.index.astype(int).astype('str')
+    #     t['IngredientKey'] = t.UploadKey.str[:]+'::'+ t.str_idx
+    #     t.drop('str_idx',axis=1,inplace=True)
+    #     return t
 
-    def import_all(self,inc_skyTruth=True): 
-        if inc_skyTruth:
-            t = pd.concat([self.import_raw(),
-                           self.import_skytruth()],
-                           sort=True)
-        else:
-            t = self.import_raw()
+    def import_all(self): 
+        t = self.import_raw()
         t.reset_index(drop=True,inplace=True) #  single integer as index
         t['reckey'] = t.index.astype(int)
            
@@ -272,9 +266,7 @@ class Read_FF():
         return t
     
     def import_all_str(self,varsToKeep=['UploadKey','Latitude','Longitude']):
-        t = pd.concat([self.import_raw_as_str(varsToKeep),
-                       self.import_skytruth_as_str(varsToKeep)],
-                       sort=True)
+        t = self.import_raw_as_str(varsToKeep),
         t.reset_index(drop=True,inplace=True) #  single integer as index
         return t
          

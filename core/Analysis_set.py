@@ -3,6 +3,9 @@
 Created on Wed May  5 14:22:20 2021
 
 @author: Gary
+
+Change on Mar 14, 2022: Remove SkyTruth archive from the standard_filtered
+data set.
 """
 
 import core.Table_manager as c_tab
@@ -155,8 +158,9 @@ class Standard_data_set(Template_data_set):
                            force_new_creation=force_new_creation)
 
     def make_work_tables(self):
-        cond = ~(self.t_man.tables['disclosures'].is_duplicate) &\
-               ~(self.t_man.tables['disclosures'].no_chem_recs)
+        cond = ~(self.t_man.tables['disclosures'].is_duplicate) #&\
+               #~(self.t_man.tables['disclosures'].no_chem_recs) &\
+               # (self.t_man.tables['disclosures'].data_source=='bulk') # remove SkyTruth
         self.wDisc = self.t_man.tables['disclosures'][cond].copy()
         
         cond = ~(self.t_man.tables['chemrecs'].dup_rec)
@@ -173,7 +177,7 @@ class Standard_data_set(Template_data_set):
                                      'bgLatitude','bgLongitude',
                                      'TotalBaseWaterVolume','TotalBaseNonWaterVolume',
                                      'TVD','bgOperatorName','primarySupplier',
-                                     'carrier_status']
+                                     'carrier_status','no_chem_recs']
                                      )
         self.wC['chemrecs'] = set(['UploadKey','CASNumber','IngredientName',
                                   'Supplier','bgCAS','calcMass','categoryCAS',
@@ -283,7 +287,6 @@ class Full_set(Template_data_set):
                            on='bgCAS',
                            how='left',validate='m:1')        
         self.df['in_std_filtered'] = ~(self.df.is_duplicate)&\
-                                     ~(self.df.no_chem_recs)&\
                                      ~(self.df.dup_rec)
 
 class Catalog_set(Full_set):
@@ -319,7 +322,7 @@ class Catalog_set(Full_set):
         self.wC['chemrecs'] = set(['UploadKey','CASNumber','IngredientName',
                                   'Supplier','PercentHighAdditive',
                                  'bgCAS','calcMass','categoryCAS',
-                                 'PercentHFJob',
+                                 'PercentHFJob','massComp','massCompFlag',
                                  'Purpose','TradeName','bgSupplier',
                                  'dup_rec','is_water_carrier','IngredientKey',
                                  'MassIngredient','is_valid_cas'])
@@ -342,7 +345,6 @@ class Catalog_set(Full_set):
                            on='bgCAS',
                            how='left',validate='m:1')        
         self.df['in_std_filtered'] = ~(self.df.is_duplicate)&\
-                                     ~(self.df.no_chem_recs)&\
                                      ~(self.df.dup_rec)
 
 
@@ -365,9 +367,7 @@ class Full_location(Full_set):
     def merge_tables(self):
         #print(f'in full loc merge: {self.wC}')
         self.df = self.wDisc
-        self.df['in_std_filtered'] = ~(self.df.is_duplicate)&\
-                                     ~(self.df.no_chem_recs)
-    
+        self.df['in_std_filtered'] = ~(self.df.is_duplicate)
     
 class Min_filtered(Standard_data_set):
     def __init__(self,bulk_fn='currentData',
@@ -451,65 +451,6 @@ class Min_no_filter(Standard_data_set):
                            on='UploadKey',
                            how='inner',validate='1:m')
         self.df['in_std_filtered'] = ~(self.df.is_duplicate)&\
-                                     ~(self.df.no_chem_recs)&\
                                      ~(self.df.dup_rec)
         self.df = self.df.drop(['is_duplicate','no_chem_recs','dup_rec'],axis=1)
-
-class MI_analysis_set(Full_set):
-    # used to make the catalog, keeps full data, but filter flag too for partitioning
-    def __init__(self,bulk_fn='currentData',
-                 sources=sources,
-                 outdir=outdir,
-                 pkl_when_creating = False,
-                 set_name='MI_analysis_set',
-                 force_new_creation=True):
-        Full_set.__init__(self,bulk_fn=bulk_fn,
-                           sources=sources,
-                           outdir=outdir,
-                           pkl_when_creating=pkl_when_creating,
-                           set_name=set_name,
-                           force_new_creation=force_new_creation)
-
-    def keep_catalog_fields(self):
-        self.wC['disclosures'] = set([#'StateName','CountyName',
-                                      #'Latitude','Longitude',
-                                      'OperatorName',#'WellName',
-                                      'UploadKey','date','APINumber',
-                                     'bgStateName','bgCountyName',
-                                     'bgLatitude','bgLongitude',
-                                     'bgDensity','bgDensity_source',
-                                     'TotalBaseWaterVolume',#'TotalBaseNonWaterVolume',
-                                     'TVD','bgOperatorName','primarySupplier',
-                                     'is_duplicate','no_chem_recs',
-                                     'has_TBWV','has_water_carrier',
-                                     'has_curated_carrier',
-                                     'within_total_tolerance','data_source',
-                                     'carrier_mass','carrier_mass_MI',
-                                     'carrier_density_MI']
-                                     )
-        self.wC['chemrecs'] = set(['UploadKey','CASNumber',#'IngredientName',
-                                 'bgCAS','calcMass','category','PercentHFJob',
-                                 'Purpose',#'TradeName','bgSupplier',
-                                 'dup_rec','is_water_carrier',
-                                 'MassIngredient'])
-        self.wC['bgCAS'] = set(['bgCAS','bgIngredientName',#'is_on_TEDX',
-                                ])
-
-    def choose_fields(self):
-        self.keep_catalog_fields()
-        
-    def merge_tables(self):
-        #print(f'in catalog set: {self.wC}')
-        self.df = pd.merge(self.wDisc[self.wC['disclosures']],
-                           self.wRec[self.wC['chemrecs']],
-                           on='UploadKey',
-                           how='inner',validate='1:m')
-        self.df = pd.merge(self.df,
-                           self.wBgCAS[self.wC['bgCAS']],
-                           on='bgCAS',
-                           how='left',validate='m:1')        
-        self.df['in_std_filtered'] = ~(self.df.is_duplicate)&\
-                                     ~(self.df.no_chem_recs)&\
-                                     ~(self.df.dup_rec)
-
 

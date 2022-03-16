@@ -87,8 +87,8 @@ NEXT STEPS:
         and move on to the next step.  (After curating and moving, it is a good idea
         to run this again to verify that you caught all that needed to be curated.)
 
-    4)  Now, update all external data sets. In particular, update the CWA and SDWA
-        data sets at CompTox with the most recent bgCAS list.  Move that excel
+    4)  Now, update all external data sets. In particular, update the CWA and DWSHA
+        data sets at CompTox.  Move that excel
         file into the external_refs directory and update the name in the 
         external_dataset_tools.py file.
         

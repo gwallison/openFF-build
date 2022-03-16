@@ -31,7 +31,6 @@ class Table_constructor():
         self.pickle_fn = {'disclosures': self.pkldir+'disclosures.pkl',
                           'chemrecs': self.pkldir+'chemrecs.pkl',
                           'cas_ing': self.pkldir+'cas_ing.pkl',
-                          #'cas_ing_xlate': self.pkldir+'cas_ing_xlate.pkl',
                           'bgCAS': self.pkldir+'bgCAS.pkl',
                           'companies': self.pkldir+'companies.pkl'
                           }
@@ -40,9 +39,9 @@ class Table_constructor():
         self.cas_ing_source = pd.read_csv(self.cas_ing_fn,quotechar='$',encoding='utf-8')
 
 
-        self.ST_without_pdf = pd.read_csv(self.trans_dir+'ST_api_without_pdf.csv',
-                                          dtype={'api10':'str'})
-        self.ST_filtered_UploadKeys = pd.read_csv(self.trans_dir+'skytruth_disclosures_to_keep_after_filtering.csv')
+        # self.ST_without_pdf = pd.read_csv(self.trans_dir+'ST_api_without_pdf.csv',
+        #                                   dtype={'api10':'str'})
+        # self.ST_filtered_UploadKeys = pd.read_csv(self.trans_dir+'skytruth_disclosures_to_keep_after_filtering.csv')
         self.location_ref_fn = self.trans_dir+'uploadKey_ref.csv'
         self.loc_ref_df = pd.read_csv(self.location_ref_fn,quotechar='$',
                                       encoding='utf-8')
@@ -242,55 +241,23 @@ class Table_constructor():
     def flag_duplicate_disclosures(self):
         self.print_step('flag duplicate disclosures')
         df = self.tables['disclosures'].copy()
-        df['api10'] = df.APINumber.str[:10]
-        df['dup_disclosures'] = df[~df.no_chem_recs]\
-                                  .duplicated(subset=['APINumber',
+        df['api10'] = df.APINumber.str[:10]        
+        df['is_duplicate'] = df.duplicated(subset=['APINumber',
                                                       'date'],
                                               keep=False)
-        df.dup_disclosures = np.where(df.no_chem_recs,False,
-                                      df.dup_disclosures)
-        bulk_api10 = df[(df.data_source=='bulk')&~(df.no_chem_recs)]\
-                       .api10.unique().tolist()
-
-
-        df['redund_skytruth'] = (df.api10.isin(bulk_api10))&\
-                                (df.data_source=='SkyTruth') 
-                                
-        cond = df.data_source=='SkyTruth'
-        df['duplicate_skytruth'] = df[cond].duplicated(subset=['api10','date'],
-                                                       keep=False)
-        df.duplicate_skytruth = np.where(df.data_source=='bulk',
-                                         False,df.duplicate_skytruth)
-        
-        st_removed_api10 = self.ST_without_pdf.api10.unique().tolist()
-        stupk = df[df.api10.isin(st_removed_api10)].UploadKey.unique().tolist()
-        df['skytruth_removed'] = df.UploadKey.isin(stupk)
-        stOK = df.UploadKey.isin(self.ST_filtered_UploadKeys.UploadKey.tolist())
-        df.skytruth_removed = np.where((cond&~(stOK)),True,df.skytruth_removed)        
-        # removed skytruth disclosures are lumped in the 'is_duplicate' group
-
-        df['is_duplicate'] = df.dup_disclosures | df.redund_skytruth | df.duplicate_skytruth | df.skytruth_removed
+        df.is_duplicate = np.where(df.no_chem_recs,False,df.is_duplicate)
         
         upk = df[df.is_duplicate].UploadKey.unique().tolist()
 
         self.tables['disclosures']['is_duplicate'] = self.tables['disclosures'].UploadKey.isin(upk)
-        self.tables['disclosures']['skytruth_removed'] = self.tables['disclosures'].UploadKey.isin(stupk)
-        self.print_step(f'n duplicate disclosures within v2 and v3: {df.dup_disclosures.sum()}',1)
-        self.print_step(f'n redundant SkyTruth disclosures: {df.redund_skytruth.sum()}',1)
-        self.print_step(f'n duplicate SkyTruth disclosures: {df.duplicate_skytruth.sum()}',1)
-        self.print_step(f'n SkyTruth disclosures deleted from pdf library: {len(stupk)}',1)        
-        self.print_step(f'final n of SkyTruth disclosures included: {len(df[(~df.is_duplicate)&cond].UploadKey.unique())}',1)
+        #self.tables['disclosures']['skytruth_removed'] = self.tables['disclosures'].UploadKey.isin(stupk)
+        # self.print_step(f'n redundant SkyTruth disclosures: {df.redund_skytruth.sum()}',1)
+        # self.print_step(f'n duplicate SkyTruth disclosures: {df.duplicate_skytruth.sum()}',1)
+        # self.print_step(f'n SkyTruth disclosures deleted from pdf library: {len(stupk)}',1)        
+        # self.print_step(f'final n of SkyTruth disclosures included: {len(df[(~df.is_duplicate)&cond].UploadKey.unique())}',1)
         self.print_step(f'n is_duplicate: {df.is_duplicate.sum()}',1)
         
-# =============================================================================
-#     def apply_auto_record(self,disc,recs,row):
-#         disc.loc[row.UploadKey,'carrier_status'] = 'auto'
-#         disc.loc[row.UploadKey,'carrier_percent'] = row.PercentHFJob
-#         #disc.loc[row.UploadKey,'has_water_carrier'] = True
-#         recs.loc[row.IngredientKey,'is_water_carrier'] = True 
-#         return disc,recs
-#     
-# =============================================================================
+
     def apply_carrier_tables(self):
         self.print_step('applying carrier table data')
         ukl = self.tables['disclosures'].UploadKey.unique().tolist()

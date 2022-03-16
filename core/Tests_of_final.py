@@ -38,7 +38,6 @@ class final_test():
         self.print_stage('Confirm removal of duplicate records from filtered data')
         assert self.df[self.df.in_std_filtered].dup_rec.sum()==0,'dup_rec==True records in filtered'
         assert self.df[self.df.in_std_filtered].is_duplicate.sum()==0, 'is_duplicate==True records in filtered'
-        assert self.df[self.df.in_std_filtered].skytruth_removed.sum()==0, 'skytruth_removed==True records in filtered'
         
     def APINumber_test(self):
         """confirms that all records have APINumbers, that the APINumbers are

@@ -25,7 +25,7 @@ while I am working on the curation and repository process (which can take severa
 days).  The currentData.zip file is typically what is used in this script to 
 build a file eventually ready for a repository.
 
-
+# 3/2022 - removing Skytruth archive
     
 """
 
@@ -37,10 +37,8 @@ do_abbrev = False              # normally False, for some testing purposes
 
 startfile =  0 # 0 for full set
 endfile = None  # None for no upper limit
-inc_skyTruth = True            # normally True, False for quicker runs
-#inc_skyTruth = False         
 
-if (startfile!=0) | (endfile!=None) | (inc_skyTruth==False):
+if (startfile!=0) | (endfile!=None) :
     # test mode does not overwrite production mode pickles
     mode = 'TEST'
     print('\n'+30*'-'+ 'Performing in TEST mode!'+30*'-'+'\n')
@@ -56,7 +54,6 @@ def run_build(bulk_fn = bulk_fn,
               make_output_files=make_output_files,
               startfile=startfile,
               endfile=endfile,
-              inc_skyTruth=inc_skyTruth,
               do_abbrev=do_abbrev,
               do_end_tests=do_end_tests,
               construct_from_scratch=construct_from_scratch):
@@ -68,8 +65,8 @@ def run_build(bulk_fn = bulk_fn,
                                            startfile=startfile,
                                            endfile=endfile,
                                            abbreviated=do_abbrev)\
-                     .create_full_set(inc_skyTruth=inc_skyTruth)
-    if do_end_tests:
+                     .create_full_set()
+    if do_end_tests&(mode=='PRODUCTION'):
         import core.Tests_of_final as tests
         print('\nStarting tests of final product')
         print('   Creating test set of FULL data')
