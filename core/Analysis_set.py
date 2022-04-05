@@ -328,8 +328,10 @@ class Catalog_set(Full_set):
                                  'MassIngredient','is_valid_cas'])
         self.wC['bgCAS'] = set(['bgCAS','bgIngredientName','is_on_TEDX',
                                 'is_on_prop65','is_on_CWA','is_on_DWSHA',
-                                'DTXSID',
-                                'is_on_PFAS_list','is_on_volatile_list'])
+                                'DTXSID', 'is_on_UVCB', 'is_on_diesel',
+                                'is_on_AQ_CWA','is_on_HH_CWA',
+                                'is_on_NPDWR','is_on_IRIS',
+                                'is_on_PFAS_list','is_on_volatile_list',])
 
     def choose_fields(self):
         self.keep_catalog_fields()

@@ -44,8 +44,8 @@ class Table_constructor():
         # self.ST_filtered_UploadKeys = pd.read_csv(self.trans_dir+'skytruth_disclosures_to_keep_after_filtering.csv')
         self.location_ref_fn = self.trans_dir+'uploadKey_ref.csv'
         self.loc_ref_df = pd.read_csv(self.location_ref_fn,quotechar='$',
-                                      encoding='utf-8')
-        dates = pd.read_csv(self.trans_dir+'upload_dates.csv')
+                                      encoding='utf-8',low_memory=False)
+        dates = pd.read_csv(self.trans_dir+'upload_dates.csv',low_memory=False)
 
         self.loc_ref_df = pd.merge(self.loc_ref_df,dates[['UploadKey','date_added']],
                            on='UploadKey',how='left',validate='1:1')

@@ -50,13 +50,36 @@ Find the github repositories of code at:
 
 ## CodeOcean Versions of Open-FF 
 
-**Beta of version 13**:
+
+** beta: VERSION 14 **:
 
 - Current download: Feb 19, 2022
 
-- assorted changes to casing_curated file.
+- Add a "fresh" scraped version of the early years of FracFocus. These data
+    were assembled by downloading (in Apr 2021) 43,000+ PDFs of the "empty" disclosures of
+    the bulk download data (which have some meta data but no chemical records),
+    scraping them with a PDF scraper program (keeping only data from the well-formed
+    PDFs) and then formatting the data to be compatible with the bulk download data.
+    This data set is kept separate from the bulk download data, but can be
+    compiled using the data_source term: "FFV1_scrape".  
+    
+- Separated the "SkyTruth" archive from the bulk download data.  This is in recognition
+    to our discovery that that archive no longer reflects what the industry has
+    published as up-to-date.  The changes we have detected between the archive
+    and more recent versions of the data impact a small fraction of records, but
+    because scraping PDF files is a large task, especially when so many disclosures
+    are poorly formatted, we cannot with certainty account for all records in
+    this archive.  Nevertheless, the archive may be of interest to researchers
+    looking into transparency and how published data changes over time.  This set
+    can be compiled using the data_source term: "SkyTruth"
+    
+- Add new external lists: EPA Comptox lists: WATERQUALCRIT, NWATRQHHC, IRIS, 
+    PFAS_master and VOLITILOME;
+    TSCA's list of UVCB (unknown, variable composition or biological); 
+    National Primary Drinking Water Regulation list (curated by Angelica Fiuza in
+    Feb. 2022); EPA's list of 5 "diesel" ingredients that are regulated
 
-** UPDATE TO VERSION 12 (March 2022) **
+** VERSION 13 (March 2022) **
 
 - Remove the "SkyTruth archive" from the standard_filtered data sets. In previous
     versions, this archive has been used to fill in the chemical records for

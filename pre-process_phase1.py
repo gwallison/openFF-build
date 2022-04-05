@@ -30,7 +30,7 @@ master_raw = set_const.Data_set_constructor(bulk_fn=bulk_fn, const_mode='pre-pro
                                    startfile=startfile,
                                    endfile=endfile,
                                    abbreviated=do_abbrev)\
-             .get_full_raw_df(inc_skyTruth=inc_skyTruth)
+             .get_full_raw_df()
 
 
 

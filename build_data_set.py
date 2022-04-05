@@ -25,16 +25,22 @@ while I am working on the curation and repository process (which can take severa
 days).  The currentData.zip file is typically what is used in this script to 
 build a file eventually ready for a repository.
 
-# 3/2022 - removing Skytruth archive
+# 3/2022 - separating Skytruth archive from main data
+# 3/2022 - adding FFV1_scrape as an additional separate data set
     
 """
 
-bulk_fn = 'currentData'        # name of raw archive file
+##  For standard processing, set the following to 'bulk'
+data_source = 'bulk'  # can be 'bulk', 'FFV1_scrape' or 'SkyTruth'
+
+bulk_fn = 'currentData'        # name of raw bulk archive file
 construct_from_scratch = True  # normally True
-do_end_tests = True            # normally True
-make_output_files = False      # True for final runs, adds lots of compile time
+do_end_tests = True            # normally True, only for 'bulk' set, ignore otherwise
+make_output_files = False      # True for final bulk runs, adds lots of compile time
 do_abbrev = False              # normally False, for some testing purposes
 
+# used to control files to read from the bulk download.  If less than full
+# set, this process is performed in "test" mode.
 startfile =  0 # 0 for full set
 endfile = None  # None for no upper limit
 
@@ -51,6 +57,7 @@ import core.Analysis_set as ana_set
 
 def run_build(bulk_fn = bulk_fn,
               mode=mode,
+              data_source=data_source,
               make_output_files=make_output_files,
               startfile=startfile,
               endfile=endfile,
@@ -64,9 +71,10 @@ def run_build(bulk_fn = bulk_fn,
                                            make_files=make_output_files,
                                            startfile=startfile,
                                            endfile=endfile,
+                                           data_source=data_source,
                                            abbreviated=do_abbrev)\
                      .create_full_set()
-    if do_end_tests&(mode=='PRODUCTION'):
+    if do_end_tests&(mode=='PRODUCTION')&(data_source=='bulk'):
         import core.Tests_of_final as tests
         print('\nStarting tests of final product')
         print('   Creating test set of FULL data')
@@ -74,7 +82,7 @@ def run_build(bulk_fn = bulk_fn,
                               pkl_when_creating=False).get_set()
         tests.final_test(df).run_all_tests()
     
-    if make_output_files == True:
+    if (make_output_files == True) &(data_source=='bulk'):
         print('\n\n -- Generating output data sets\n')
     
         ana_set.Standard_data_set(bulk_fn=bulk_fn,
