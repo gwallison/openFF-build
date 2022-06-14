@@ -325,7 +325,7 @@ class Catalog_set(Full_set):
                                  'PercentHFJob','massComp','massCompFlag',
                                  'Purpose','TradeName','bgSupplier',
                                  'dup_rec','is_water_carrier','IngredientKey',
-                                 'MassIngredient','is_valid_cas'])
+                                 'MassIngredient','is_valid_cas','cleanMI'])
         self.wC['bgCAS'] = set(['bgCAS','bgIngredientName','is_on_TEDX',
                                 'is_on_prop65','is_on_CWA','is_on_DWSHA',
                                 'DTXSID', 'is_on_UVCB', 'is_on_diesel',

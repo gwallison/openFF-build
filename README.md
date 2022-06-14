@@ -51,9 +51,23 @@ Find the github repositories of code at:
 ## CodeOcean Versions of Open-FF 
 
 
-** beta: VERSION 14 **:
+** BETA **
 
-- Current download: Feb 19, 2022
+- Revamp location cleanup: require curation of State-County|Name-Number 
+    combinations so that ALL bgStateName/CountyName values are consistent with
+    formal list.  Reproject bgLatitude/Longitude so it is all in WGS84 and 
+    easy to reproject into any other Projection. Compare all reported lat/lon
+    to state and county boundaries to identify pairs that are inconsistent with
+    reported names. Use geopandas. Removed a few flags but added three
+    new: "loc_name_mismatch", "loc_within_county", "loc_within_state"; keeping
+    "latlon_too_coarse". (May 2, 2022)
+    
+- Add another criteria to find inconsistent MassIngredient: remove records
+    with PercentHFJob = 0.
+
+** VERSION 14 **:
+
+- Current download: April 2, 2022
 
 - Add a "fresh" scraped version of the early years of FracFocus. These data
     were assembled by downloading (in Apr 2021) 43,000+ PDFs of the "empty" disclosures of

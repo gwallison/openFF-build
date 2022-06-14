@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 import core.cas_tools as ct
 import core.process_FFV1_scrape_input as pFFV1
+import core.process_NM_scrape as pNM
 
 
 class Read_FF():
@@ -47,6 +48,7 @@ class Read_FF():
         self.cols_to_clean = ['OperatorName','Supplier','TradeName',
                               'CASNumber','IngredientName']
         self.cols_to_lower = ['IngredientName']
+        print(self.sources)
         
     def getMissingList(self):
         df = pd.read_csv(self.sources+ 'transformed/missing_values.csv',
@@ -276,14 +278,18 @@ class Read_FF():
     
 
     def import_all(self): 
-        if self.data_source=='bulk':
+        if self.data_source=='bulk': # this is the main data route
             t = self.import_raw()
         if self.data_source=='FFV1_scrape':
             print(' -- processing FFV1 scraped data')
-            t = pFFV1.get_FFV1()
+            t = pFFV1.get_FFV1(sources=self.sources)
             t = self.clean_cols(t)
         if self.data_source=='SkyTruth':
             t = self.import_skytruth()
+        if self.data_source=='NM_scrape_2022_05':
+            print(' -- processing New Mexico scraped data')
+            t = pNM.fetch_final()
+            t = self.clean_cols(t)
         t.reset_index(drop=True,inplace=True) #  single integer as index
         t['reckey'] = t.index.astype(int)
         if self.data_source=='bulk':   

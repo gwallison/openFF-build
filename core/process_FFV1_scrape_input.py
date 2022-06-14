@@ -120,8 +120,6 @@ def get_FFV1(sources = r"e:\OpenFF_mirror\data"):
                      'IngredientName', 'CASNumber', 
                      'PercentHighAdditive', 'PercentHFJob',
                      'Comment', 
-                     # !!!!!!!!!!!!!!!!!!!!!!!
-                     #'bgPercentHFJob', 'bgPercentHighAdditive', 
                      'IngredientKey']]
     #print(f'Len of chemdf: {len(chemdf)}, disc: {len(chemdf.UploadKey.unique())}')
 

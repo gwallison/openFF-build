@@ -10,8 +10,13 @@ import pandas as pd
 #import gc
 import builder_tasks.Carrier_1_identify_in_new as car1
 
-# fetch the raw df pickle made in pre-process_1
-df = pd.read_pickle('./tmp/carrier_df.pkl')
+data_source = 'SkyTruth'
 
-car_obj = car1.Carrier_ID(df)
+q = input(f'Data source is set to <{data_source}>.  Enter "y" to continue.  > ')
+
+if q == 'y':
+    # fetch the raw df pickle made in pre-process_1
+    df = pd.read_pickle('./tmp/carrier_df.pkl')
+    
+    car_obj = car1.Carrier_ID(df,data_source=data_source)
 

@@ -16,9 +16,10 @@ import core.external_dataset_tools as et
 class Table_constructor():
     
     def __init__(self,pkldir='./tmp/',sources='./sources/',
-                 outdir = './out/'):
+                 outdir = './out/',data_source='bulk'):
         self.pkldir = pkldir
         self.sources = sources
+        self.data_source= data_source
         self.trans_dir = self.sources+'transformed/'
         self.outdir = outdir
         self.tables = {'disclosures': None,
@@ -42,7 +43,7 @@ class Table_constructor():
         # self.ST_without_pdf = pd.read_csv(self.trans_dir+'ST_api_without_pdf.csv',
         #                                   dtype={'api10':'str'})
         # self.ST_filtered_UploadKeys = pd.read_csv(self.trans_dir+'skytruth_disclosures_to_keep_after_filtering.csv')
-        self.location_ref_fn = self.trans_dir+'uploadKey_ref.csv'
+        self.location_ref_fn = self.trans_dir+f'{data_source}/uploadKey_ref.csv'
         self.loc_ref_df = pd.read_csv(self.location_ref_fn,quotechar='$',
                                       encoding='utf-8',low_memory=False)
         dates = pd.read_csv(self.trans_dir+'upload_dates.csv',low_memory=False)
@@ -279,7 +280,7 @@ class Table_constructor():
         #disc['non_water_carrier'] = False
 
         # **** auto carrier install
-        auto_carrier_df = pd.read_csv(self.trans_dir+'carrier_list_auto.csv',
+        auto_carrier_df = pd.read_csv(self.trans_dir+f'{self.data_source}/carrier_list_auto.csv',
                                        quotechar = '$',encoding='utf-8',
                                        low_memory=False)
         # pass auto carrier type into disc table
@@ -309,7 +310,7 @@ class Table_constructor():
             print('***ERROR applying is_water_carrier: SOMETHING IS WRONG')
         
         # **** disclosures with problems preventing carrier detection
-        prob_carrier_df = pd.read_csv(self.trans_dir+'carrier_list_prob.csv',
+        prob_carrier_df = pd.read_csv(self.trans_dir+f'{self.data_source}/carrier_list_prob.csv',
                                        quotechar = '$',encoding='utf-8')
         # to keep sub-runs from failing...
         prob_carrier_df = prob_carrier_df[prob_carrier_df.UploadKey.isin(ukl)]
@@ -322,7 +323,7 @@ class Table_constructor():
         
         ### the following steps remove the curation 'helpers' to make it
         ###   a useful file
-        mg = pd.read_csv(self.trans_dir+'carrier_list_curated.csv',
+        mg = pd.read_csv(self.trans_dir+f'{self.data_source}/carrier_list_curated.csv',
                          quotechar='$',encoding='utf-8',low_memory=False,
                          dtype={'is_water_carrier':'str'})
         #print(len(mg))

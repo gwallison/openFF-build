@@ -57,6 +57,13 @@ def calc_MI_values(rec_df,disc_df):
     rec_df.job_mass_MI = np.where(rec_df.MassIngredient>too_small,
                                   rec_df.job_mass_MI,
                                   np.NaN)
+    # must also remove records with a 0 for PercentHFJ, otherwise
+    # creates a condition where denominator is infinite and therefore NOT inconsistent!
+    # April, 2022
+    rec_df.job_mass_MI = np.where(rec_df.PercentHFJob>0,
+                                  rec_df.job_mass_MI,
+                                  np.NaN)
+    
     
     # Look for inconsistencies in MassIngredient at the disclosure level,
     #   generate cleanMI

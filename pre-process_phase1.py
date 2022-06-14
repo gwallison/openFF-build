@@ -16,20 +16,21 @@ import core.Data_set_constructor as set_const
 
 
 bulk_fn = 'currentData'
+stfilename = 'sky_truth_final'
 make_output_files = False
 do_abbrev = False
+data_source = 'SkyTruth'
 
-startfile = 0  # 0 for full set
+startfile = 0 # 0 for full set
 endfile = None  # None for no upper limit
-inc_skyTruth = True
-# inc_skyTruth = False
-# 
 
 master_raw = set_const.Data_set_constructor(bulk_fn=bulk_fn, const_mode='pre-process',
+                                   stfilename=stfilename,         
                                    make_files=make_output_files,
                                    startfile=startfile,
                                    endfile=endfile,
-                                   abbreviated=do_abbrev)\
+                                   abbreviated=do_abbrev,
+                                   data_source=data_source)\
              .get_full_raw_df()
 
 
@@ -44,24 +45,31 @@ master_raw[['UploadKey','CASNumber','IngredientName',
 rawdf = master_raw[['CASNumber','IngredientName',
                     'OperatorName','Supplier',]].fillna('MISSING')
 
+
 cas1 = CAS1.initial_CAS_master_list(rawdf)
 df, cas_to_curate = CAS1.merge_CAS_with_ref(cas1)
 df.to_csv('./tmp/CAS_to_curateNEW.csv',index=False,encoding='utf-8',quotechar='$')
 
 c_xlate_to_curate = complist.add_new_to_Xlate(rawdf)
 
-loc_clean.clean_location(master_raw)
+newloc = loc_clean.clean_location(master_raw,data_source=data_source)
 
 
 
 s = f"""\n\n
 The first stage of pre-processing has been completed.
 
-Number of new CAS to curate:  {cas_to_curate}
-Number of new Companies to curate = {c_xlate_to_curate}
+Number of new locations to curate: {newloc}
+Number of new CAS to curate:       {cas_to_curate}
+Number of new Companies to curate: {c_xlate_to_curate}
 
 NEXT STEPS:
-     1) The CAS_to_curate list has now been updated with new disclosures and
+    
+     1) If there are new State-County/Name-Number combinations, the location
+        list must be curated to recognize them.  /tmp/location_curatedNEW.csv.
+        After you do that, run this script again.
+        
+     2) The CAS_to_curate list has now been updated with new disclosures and
         is ready for the CURATION step.  Find it as /tmp/CAS_to_curateNEW.csv.
 
         *****
@@ -77,17 +85,16 @@ NEXT STEPS:
         
         *** Then run this script again, then curate it's output
         *****
-
         
-    2)  The company_xlate file has been updated with new names and is ready for
+    3)  The company_xlate file has been updated with new names and is ready for
         the CURATION step. Find it as /tmp/company_xlateNEW.csv IF THERE ARE
         ANY TO CURATE.
         
-    3)  When finished curating, move to /data/transformed (be sure to save old one as backup)
+    4)  When finished curating, move to /data/transformed (be sure to save old one as backup)
         and move on to the next step.  (After curating and moving, it is a good idea
         to run this again to verify that you caught all that needed to be curated.)
 
-    4)  Now, update all external data sets. In particular, update the CWA and DWSHA
+    5)  Now, update all external data sets. In particular, update the CWA and DWSHA
         data sets at CompTox.  Move that excel
         file into the external_refs directory and update the name in the 
         external_dataset_tools.py file.
@@ -100,3 +107,4 @@ rawdf = None
 master_raw = None
 df = None
 gc.collect()
+

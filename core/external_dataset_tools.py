@@ -130,7 +130,7 @@ def add_CompTox_refs(df,sources='./sources/'):
                'IRIS': 'Chemical List IRIS-2022-03-31.csv',
                'PFAS_list': 'Chemical List PFASMASTER-2022-04-01.csv',
                'volatile_list': 'Chemical List VOLATILOME-2022-04-01.csv'}
-    reffn = 'CCD-Batch-Search_2022-04-01_12_32_54.xlsx'
+    reffn = 'CCD-Batch-Search_2022-04-01_12_32_54.csv'
     for lst in ctfiles.keys():
         print(f'  -- processing {lst}')
         ctdf = pd.read_csv(sources+ctfiles[lst],low_memory=False,
@@ -140,7 +140,7 @@ def add_CompTox_refs(df,sources='./sources/'):
         df['is_on_'+lst] = df.bgCAS.isin(clst)
         
     # now add the epa ref numbers and names
-    refdf = pd.read_excel(sources+reffn,sheet_name=1,engine="openpyxl")
+    refdf = pd.read_csv(sources+reffn)
     refdf = refdf.rename({'INPUT':'bgCAS','PREFERRED_NAME':'epa_pref_name'},axis=1)
     refdf = refdf[~refdf.bgCAS.duplicated()] # get rid of double callouts
     refdf.DTXSID = np.where(refdf.DTXSID.isna(),
@@ -148,7 +148,7 @@ def add_CompTox_refs(df,sources='./sources/'):
                             refdf.DTXSID)
     df = pd.merge(df,refdf[['bgCAS','DTXSID','epa_pref_name']],
                   how='left',on='bgCAS')
-    df.to_csv('./tmp/bgcas_test.csv')
+    #df.to_csv('./tmp/bgcas_test.csv')
     return df
        
 # def add_CompTox_refs_old(df,sources='./sources/',

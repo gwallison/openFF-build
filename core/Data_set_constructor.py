@@ -84,7 +84,8 @@ class Data_set_constructor():
     def create_full_set(self):
         tab_const = c_tab.Table_constructor(pkldir=self.picklefolder,
                                             outdir = self.outdir,
-                                            sources = self.sources)
+                                            sources = self.sources,
+                                            data_source=self.data_source)
         self.initialize_dir(self.picklefolder)
         self._banner('PROCESS RAW DATA FROM SCRATCH')
         self._banner(f'Reading {self.data_source} Data')
@@ -94,13 +95,14 @@ class Data_set_constructor():
                              sources = self.sources,
                              outdir = self.outdir,
                              startfile=self.startfile,
-                             endfile=self.endfile).\
-                                  import_all()
+                             endfile=self.endfile).import_all()
+        print(f'  -- Number of initial disclosures: {len(raw_df.UploadKey.unique())}')                         
         self._banner('Table_manager')
         mark_missing = ['CASNumber','IngredientName','Supplier','OperatorName']
         for col in mark_missing:
             raw_df[col].fillna('MISSING',inplace=True)
         tab_const.assemble_all_tables(raw_df)
+        print(f'  -- Number disclosure in table manager: {len(tab_const.tables["disclosures"])}')
         raw_df = None
         
         
@@ -110,11 +112,12 @@ class Data_set_constructor():
         self._banner('PROCESS RAW DATA FROM SCRATCH')
         self._banner('Reading Bulk Data')
         raw_df = rff.Read_FF(zname=self.zfilename,
+                             skytruth_name=self.stfilename,
+                             data_source = self.data_source,
                              sources = self.sources,
                              outdir = self.outdir,
                              startfile=self.startfile,
-                             endfile=self.endfile).\
-                                  import_all()
+                             endfile=self.endfile).import_all()
         mark_missing = ['CASNumber','IngredientName','Supplier','OperatorName']
         for col in mark_missing:
             raw_df[col].fillna('MISSING',inplace=True)
@@ -126,8 +129,10 @@ class Data_set_constructor():
         """ generates a set of mostly of raw values - used mostly
         in pre-process screening. """
         
-        tab_const = c_tab.Construct_tables(pkldir=self.picklefolder)
+        tab_const = c_tab.Construct_tables(pkldir=self.picklefolder,
+                                           data_source=self.data_source)
         raw_df = rff.Read_FF(zname=self.zfilename,
                              startfile=self.startfile,
+                             data_source=self.data_source,
                              endfile=self.endfile).import_all()
         return tab_const

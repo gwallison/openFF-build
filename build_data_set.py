@@ -31,7 +31,8 @@ build a file eventually ready for a repository.
 """
 
 ##  For standard processing, set the following to 'bulk'
-data_source = 'bulk'  # can be 'bulk', 'FFV1_scrape' or 'SkyTruth'
+data_source = 'SkyTruth'  # can be 'bulk', 'FFV1_scrape' or 'SkyTruth'
+                                    # or 'NM_scrape_2022_05'
 
 bulk_fn = 'currentData'        # name of raw bulk archive file
 construct_from_scratch = True  # normally True

@@ -16,15 +16,21 @@ upper_tolerance = 105
 density_min = 6.0
 density_max = 13.0
 
+# Normally set to True
+remove_dropped_keys = True
+
 class Carrier_ID():
-    def __init__(self,input_df):
+    def __init__(self,input_df,data_source='bulk'):
+        self.remove_dropped_keys = remove_dropped_keys
+        if not self.remove_dropped_keys:
+            print('  -- Not removing dropped keys from carrier sets')
         self.df = input_df
         self.in_upk = self.df.UploadKey
         self.in_ik = self.df.IngredientKey
-
-        self.auto_fn = trans_dir+'carrier_list_auto.csv'
-        self.curdf_fn = trans_dir+'carrier_list_curated.csv'
-        self.probdf_fn = trans_dir+'carrier_list_prob.csv'
+        self.data_source = data_source
+        self.auto_fn = trans_dir+f'{data_source}/carrier_list_auto.csv'
+        self.curdf_fn = trans_dir+f'{data_source}/carrier_list_curated.csv'
+        self.probdf_fn = trans_dir+f'{data_source}/carrier_list_prob.csv'
         
         # list of single purpose lables for carriers
         self.wlst = ['carrier / base fluid', 'carrier/base fluid', 'carrier fluid',
@@ -53,22 +59,23 @@ class Carrier_ID():
         """When saved IngredientKeys are missing in new data sets, we drop the
         associated disclosures from the curated list.  This forces a new evaluation
         of those disclosures in case they have been changed."""
-        testupk = pd.merge(self.in_upk,ref_df[['UploadKey']],
-                           on='UploadKey',how='outer',indicator=True)
-        #print(testupk[testupk['_merge']=='right_only'])
-        dropkeys = testupk[testupk['_merge']=='right_only'].UploadKey.tolist()
-        if len(dropkeys)>0:
-            print(f'       ** Dropping {len(dropkeys)} carriers because UploadKeys are missing in latest data')
-            ref_df = ref_df[~(ref_df.UploadKey.isin(dropkeys))]
-        #print(testupk.head(10))
-        if do_IngKey:
-            testik = pd.merge(self.in_ik,ref_df[['IngredientKey']],
-                               on='IngredientKey',how='outer',indicator=True)
-            #print(testik[testik['_merge']=='right_only'])
-            dropkeys = testik[testik['_merge']=='right_only'].IngredientKey.tolist()
+        if self.remove_dropped_keys:
+            testupk = pd.merge(self.in_upk,ref_df[['UploadKey']],
+                               on='UploadKey',how='outer',indicator=True)
+            #print(testupk[testupk['_merge']=='right_only'])
+            dropkeys = testupk[testupk['_merge']=='right_only'].UploadKey.tolist()
             if len(dropkeys)>0:
-                print(f'      ** Dropping {len(dropkeys)} carriers because IngredientKeys are missing in latest data')
-                ref_df = ref_df[~(ref_df.IngredientKey.isin(dropkeys))]
+                print(f'       ** Dropping {len(dropkeys)} carriers because UploadKeys are missing in latest data')
+                ref_df = ref_df[~(ref_df.UploadKey.isin(dropkeys))]
+            #print(testupk.head(10))
+            if do_IngKey:
+                testik = pd.merge(self.in_ik,ref_df[['IngredientKey']],
+                                   on='IngredientKey',how='outer',indicator=True)
+                #print(testik[testik['_merge']=='right_only'])
+                dropkeys = testik[testik['_merge']=='right_only'].IngredientKey.tolist()
+                if len(dropkeys)>0:
+                    print(f'      ** Dropping {len(dropkeys)} carriers because IngredientKeys are missing in latest data')
+                    ref_df = ref_df[~(ref_df.IngredientKey.isin(dropkeys))]
         return ref_df
     
     def fetch_carrier_lists(self):
@@ -630,7 +637,7 @@ class Carrier_ID():
         t['is_water_carrier'] = ''
         ukt = t.UploadKey.unique().tolist()
         
-        print(f'Still to be curated: {len(t.UploadKey.unique())}')
+        print(f'Still to be curated (all data sets): {len(t.UploadKey.unique())} ')
         self.curdf.is_new = False
         self.curdf = pd.concat([self.curdf,t],sort=True)
         # add blank line to make excel curation easier
@@ -645,8 +652,9 @@ class Carrier_ID():
                           encoding='utf-8',index=False)
         
     def remove_disclosures(self,sourcedf):
-        upk = sourcedf.UploadKey.unique().tolist()
-        self.df = self.df[~(self.df.UploadKey.isin(upk))]
-        self.disc = self.disc[~(self.disc.UploadKey.isin(upk))]
-        #print(f'In length: {len(upk)}; After removing: df: {len(self.df)}; disc: {len(self.disc)}')
+        if self.remove_dropped_keys:
+            upk = sourcedf.UploadKey.unique().tolist()
+            self.df = self.df[~(self.df.UploadKey.isin(upk))]
+            self.disc = self.disc[~(self.disc.UploadKey.isin(upk))]
+            #print(f'In length: {len(upk)}; After removing: df: {len(self.df)}; disc: {len(self.disc)}')
         
