@@ -20,6 +20,7 @@ stfilename = 'sky_truth_final'
 make_output_files = False
 do_abbrev = False
 data_source = 'SkyTruth'
+data_source = 'bulk'
 
 startfile = 0 # 0 for full set
 endfile = None  # None for no upper limit

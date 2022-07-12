@@ -10,7 +10,7 @@ import pandas as pd
 #import gc
 import builder_tasks.Carrier_1_identify_in_new as car1
 
-data_source = 'SkyTruth'
+data_source = 'bulk'
 
 q = input(f'Data source is set to <{data_source}>.  Enter "y" to continue.  > ')
 
