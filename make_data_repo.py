@@ -36,7 +36,7 @@ tempfolder = './tmp/'
 
 
 data_source = 'bulk'  # 'bulk' for typical processing
-repo_name = 'v14_BETA_2022_06_25'
+repo_name = 'v15_beta_2022_08_14'
 #repo_name = 'junk'
 
 q = input(f'Data source is set to < {data_source} > and repo to {repo_name}. \n\n -- Enter "y" to start building process.  > ')
@@ -46,13 +46,11 @@ repo_dir = build_common.get_repo_dir() + repo_name
 pklsource = 'currentData_pickles'
 
 descriptive_notes = f""" This is an OpenFF data repository for the 
-bulk download of FracFocus from May 28, 2022.
+bulk download of FracFocus from July 30, 2022.
 
 Created {datetime.date.today()}
-CodeOcean version: 14 with changes:
-    - added a criteria to MI_inconsistent, which finds an additional 800+
-      inconsistent disclosures.
-    - includes revamp of location data including checks against shapefiles.
+CodeOcean version: 15
+The field "rq_lbs" was added from the the ver 15 code.
 """
 
 

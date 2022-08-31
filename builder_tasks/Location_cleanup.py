@@ -50,6 +50,8 @@ def fetch_clean_loc_names(latlon_df):
     latlon_df.StateName.fillna('missing',inplace=True)
     latlon_df.CountyName.fillna('missing',inplace=True)
     old = get_cur_table()
+    #print(f'old: {old.columns}')
+    #print(f'latlon: {latlon_df.columns}')    
     mg = pd.merge(latlon_df,old[['StateName','StateNumber',
                                   'CountyName','CountyNumber']],
                    on=['StateName','StateNumber','CountyName','CountyNumber'],

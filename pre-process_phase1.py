@@ -19,7 +19,7 @@ bulk_fn = 'currentData'
 stfilename = 'sky_truth_final'
 make_output_files = False
 do_abbrev = False
-data_source = 'SkyTruth'
+#data_source = 'SkyTruth'
 data_source = 'bulk'
 
 startfile = 0 # 0 for full set
@@ -68,7 +68,7 @@ NEXT STEPS:
     
      1) If there are new State-County/Name-Number combinations, the location
         list must be curated to recognize them.  /tmp/location_curatedNEW.csv.
-        After you do that, run this script again.
+        ** After you do that, run this script again before other steps. **
         
      2) The CAS_to_curate list has now been updated with new disclosures and
         is ready for the CURATION step.  Find it as /tmp/CAS_to_curateNEW.csv.

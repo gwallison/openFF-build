@@ -53,6 +53,12 @@ Find the github repositories of code at:
 
 ** BETA **
 
+- added Reportable Quantities for all bgCAS that have them.  The field
+    added is named "rq_lbs".  This value is NaN if the bgCAS is not on the
+    list. (Added Aug 14, 2022)
+
+** VERSION 15 **
+
 - Revamp location cleanup: require curation of State-County|Name-Number 
     combinations so that ALL bgStateName/CountyName values are consistent with
     formal list.  Reproject bgLatitude/Longitude so it is all in WGS84 and 

@@ -114,12 +114,20 @@ def add_UVCB_list(df,sources='./sources/'):
     return df
 
 def add_NPDWR_list(df,sources='./sources/'):
-    # add listed curated by Angelica
+    # add list curated by Angelica
     print('  -- processing NPDWR list')
     npdwr = pd.read_csv(sources+'NationalPrimaryDrinkingWaterRegulations_machine_readable_FEB2022.csv')
     cas = npdwr[npdwr.CASRN.notna()].CASRN.unique().tolist()
     df['is_on_NPDWR'] = df.bgCAS.isin(cas)
     return df
+
+def add_RQ_list(df,sources='./sources/'):
+    # variable added to some bgCAS is 'rq_lbs'
+    print('  -- processing Reportable Quantity list')
+    rq = pd.read_csv(sources+'RQ_final.csv',quotechar='$',encoding='utf-8')
+    df = pd.merge(df,rq,on='bgCAS',how='left')
+    return df
+    
 
 def add_CompTox_refs(df,sources='./sources/'):
     
@@ -201,5 +209,6 @@ def add_all_bgCAS_tables(df,sources='./sources/external_refs/',
     #df = add_Volatile_ref(df,sources)
     df = add_diesel_list(df)
     df = add_UVCB_list(df,sources)
+    df = add_RQ_list(df,sources)
     return df
     
