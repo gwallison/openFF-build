@@ -216,29 +216,36 @@ def get_CAS_syn_dict(remove_paren=False):
         cdic = add_syn_to_dict(row, cdic)
     return cdic
 
-def make_syn_list(rec,big):
-    lst = rec.split('|')
-    for i in lst[1:]:
-        big.append('$'+lst[0].strip()+'$,$'+i.strip().lower()+'$\n')
-    return big
+# def make_syn_list(rec,big):
+#     lst = rec.split('|')
+#     for i in lst[1:]:
+#         big.append('$'+lst[0].strip()+'$,$'+i.strip().lower()+'$\n')
+#     return big
 
+def make_syn_list(cas,rec,big):
+    lst = rec.split('|')
+    for i in lst:
+        big.append('$'+cas+'$,$'+i.strip().lower()+'$\n')
+    return big
     
 def make_CompTox_syn_file():
     raw_ct = []
     refdir = 'c:/MyDocs/OpenFF/data/external_refs/CompTox_ref_files/'
     flst = os.listdir(refdir)
+    flst = ['current_batch_synonyms.csv','broad_search_synonyms.csv']
     for fn in flst:
         if fn[-4:] != '.csv':
             print(f'NON csv file in CompTox references {fn}')
         else:
-            t = pd.read_csv(refdir+fn)
+            print(fn)
+            t = pd.read_csv(refdir+fn,quotechar='$',encoding='utf-8')
             print(f'Reading {fn}, len: {len(t)}')
             raw_ct.append(t)
     syn = pd.concat(raw_ct,sort=True)
     big = ['$cas_number$,$synonym$\n']
     for i,row in syn.iterrows():
-        if row.IDENTIFIER != np.NaN:
-            big = make_syn_list(row.IDENTIFIER,big)
+        if row.identifier != np.NaN:
+            big = make_syn_list(row.bgCAS,row.identifier,big)
         #print(i,len(big))
     
     with open('c:/MyDocs/OpenFF/data/transformed/CAS_synonyms_CompTox.csv','w',encoding='utf-8') as f:
@@ -246,6 +253,7 @@ def make_CompTox_syn_file():
             f.write(i)
         
 if __name__ == '__main__':
+    print('Run from the openFF-build file: make_CAS_ref.py!')
     #create_CompTox_syn_lsh_pkl()    
     #dic = processAll()
     pass

@@ -49,6 +49,11 @@ rawdf = master_raw[['CASNumber','IngredientName',
 
 cas1 = CAS1.initial_CAS_master_list(rawdf)
 df, cas_to_curate = CAS1.merge_CAS_with_ref(cas1)
+if (cas_to_curate == 0):
+    print('   -- writing /tmp/comptox_CAS_list.csv for batch search')
+    df[~(df.curatedCAS.duplicated())][['curatedCAS']].sort_values('curatedCAS')\
+        .to_csv('./tmp/comptox_CAS_list.csv')
+
 df.to_csv('./tmp/CAS_to_curateNEW.csv',index=False,encoding='utf-8',quotechar='$')
 
 c_xlate_to_curate = complist.add_new_to_Xlate(rawdf)
@@ -77,12 +82,15 @@ NEXT STEPS:
         If there are new CAS numbers that are valid but unknown, run them through
         the SciFinder process before proceeding to the curating process. Export
         whatever SciFinder gives you to a tagged output and move to the 
-        sources/CAS_ref_files folder
+        sources/CAS_ref_files folder.  Note that the Scifinder-n doesnt support
+        the tagged file, so you have to use the template and do it by hand!
+        
         You need to do the same with CompTox: get the *synonyms* from a bulk search
         of the new CAS numbers (export into Excel, saved as csv) 
         and put into the CompTox_ref_file directory.
         After that, run make_CAS_ref.py to update the CAS_ref_files and synonym
         files.
+        Also, download the new molecule images for the catalog.
         
         *** Then run this script again, then curate it's output
         *****
@@ -95,10 +103,24 @@ NEXT STEPS:
         and move on to the next step.  (After curating and moving, it is a good idea
         to run this again to verify that you caught all that needed to be curated.)
 
-    5)  Now, update all external data sets. In particular, update the CWA and DWSHA
-        data sets at CompTox.  Move that excel
-        file into the external_refs directory and update the name in the 
-        external_dataset_tools.py file.
+    5)  Once CAS-to-curate is zero and if you've added new chemicals (that is,
+        used SciFinder) 
+        a)  use the file /tmp/comptox_CAS_list.csv
+            to do a batch search for ALL current chem. When doing the batch collection,
+            make sure you check:
+                - Excel format
+                - under Chemical Identifiers:
+                    - Chemical name
+                    - CAS RN
+                    - DTXSID
+                    - IUPAC Name
+                - under Enhanced Data Sheets
+                    - Synonyms and Identifiers
+            rename and save that file in /tmp as comptox_batch_results.xlsx
+        b)  run process_comptox_batch.py.  This will extract the data from
+            the batch results and store the needed files in the proper
+            places.
+        c)  fetch new molecule images with !!!!!!!!!!!!
         
 """
 
