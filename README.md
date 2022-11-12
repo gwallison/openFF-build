@@ -42,7 +42,10 @@ By removing or cleaning the difficult data from this unique data source,
 we have produced a data set that can facilitate more in-depth 
 analyses of chemical use in the fracking industry.
 
-Find a browsable version of the processed data at the [Open-FF Catalog](https://frackingchemicaldisclosure.wordpress.com/data-navigator/)
+### The online browser
+Find a browsable version of the processed data at the [Open-FF Catalog](https://frackingchemicaldisclosure.wordpress.com/data-navigator/).
+This includes a chemical index with extensive profiles of every material, 
+a data dictionary, and other resources.
 
 Find the github repositories of code at:
 - [openFF-build](https://github.com/gwallison/openFF-build)
