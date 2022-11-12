@@ -26,14 +26,14 @@ class Table_constructor():
                        'chemrecs': None,
                        'cas_ing': None,
                        'bgCAS': None,
-                       'companies': None # all company data is also in records/disc
+                       'companies': None, # all company data is also in records/disc
                        }
 
         self.pickle_fn = {'disclosures': self.pkldir+'disclosures.pkl',
                           'chemrecs': self.pkldir+'chemrecs.pkl',
                           'cas_ing': self.pkldir+'cas_ing.pkl',
                           'bgCAS': self.pkldir+'bgCAS.pkl',
-                          'companies': self.pkldir+'companies.pkl'
+                          'companies': self.pkldir+'companies.pkl',
                           }
 
         self.cas_ing_fn = self.trans_dir+'casing_curated.csv'
@@ -51,7 +51,8 @@ class Table_constructor():
         self.loc_ref_df = pd.merge(self.loc_ref_df,dates[['UploadKey','date_added']],
                            on='UploadKey',how='left',validate='1:1')
 
-
+        #print(self.loc_ref_df.columns)
+        
     def print_step(self,txt,indent=0,newlinefirst=False):
         if newlinefirst:
             print()
@@ -95,7 +96,13 @@ class Table_constructor():
                                      outdir=self.outdir)
         self.tables['bgCAS'] = df
 
-
+    def assemble_PADUS_data(self,df):
+        ext_sources_dir = self.sources+'external_refs/'
+        return et.process_PADUS(df,sources=ext_sources_dir,
+                                outdir=self.outdir,
+                                in_data_source=self.data_source)
+        
+        
     #########   DISCLOSURE TABLE   ################
     def make_date_fields(self,df):
         self.print_step('constructing dates',1)
@@ -134,7 +141,7 @@ class Table_constructor():
                                   'APINumber', 'TotalBaseWaterVolume',
                                   'TotalBaseNonWaterVolume','FFVersion','TVD',
                                   'StateNumber','CountyNumber',
-                                  #'Latitude','Longitude',
+                                  'api10',
                                   'Projection',
                                   'WellName','FederalWell','IndianWell',
                                   'data_source']].first()
@@ -152,7 +159,7 @@ class Table_constructor():
         df = pd.merge(df,self.loc_ref_df,on='UploadKey',how='left',
                       validate='1:1')
         df = self.make_date_fields(df)
-
+        df = self.assemble_PADUS_data(df) # adds bgFederalWell, bgNat...
         self.tables['disclosures']= df
 
 
@@ -415,6 +422,7 @@ class Table_constructor():
         self.assemble_companies_table()
         self.assemble_bgCAS_table(self.tables['cas_ing'])
         self.assemble_disclosure_table(df)
+        #df = self.assemble_PADUS_data(df)
         self.assemble_chem_rec_table(df)
         self.apply_carrier_tables()
         self.flag_empty_disclosures()

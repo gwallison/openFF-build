@@ -21,7 +21,9 @@ import build_common
 trans_dir = build_common.get_transformed_dir()
 
 final_crs = 4326 # EPSG value for bgLat/bgLon; 4326 for WGS84: Google maps
-
+# final_crs = 4269 # NAD83  (Note that for N.America, this is indistinguishable
+#                  # with WGS84, but is a projected coordinate system)
+#                  # Changing this in Oct 2022
 #### -----------   File handles  -------------- ####
 sources = trans_dir
 cur_tab = sources+'location_curated.csv'
@@ -29,23 +31,24 @@ api_code_ref = sources+'new_state_county_ref.csv'
 
 #### ----------    end File Handles ----------  ####
 
-# def set_distance(row):
-#     """ used to calculate the distance between two sets of lat/lon in miles.
-#     If there are problems in the calculation, an arbitrarily large number is
-#     returned."""
-    
-#     if row.refLatitude<1:
-#         return 9999 # arbitrary big number; 
-#     try:
-#         return geodesic((row.Latitude,row.Longitude),
-#                         (row.refLatitude,row.refLongitude)).miles
-#     except: # problems? set to a big number
-#         #print(f'geodesic exception on {row.Latitude}, {row.Longitude};; {row.refLatitude}, {row.refLongitude}')
-#         return 9999 # arbitrary big number; 
 
 def get_cur_table():
     return pd.read_csv(cur_tab,quotechar='$',encoding='utf-8')
     
+def add_state_location_data(df):
+     """used to import state-derived latlon data into dataframe
+     see get_state_data directory for updating the master data file"""
+     print('  -- importing state-derived location data')
+     gb = df.groupby('api10',as_index=False)['UploadKey'].first()
+     gb = gb[['api10']] # don't want UploadKey
+     ext_latlon = pd.read_csv(r"C:\MyDocs\OpenFF\data\external_refs\state_latlon.csv",
+                              dtype={'api10':str},low_memory=False,
+                              quotechar='$',encoding='utf-8')
+     mg = pd.merge(gb,ext_latlon[['api10','stLatitude','stLongitude']],
+                   on='api10',how='left',validate='1:1')
+     out = pd.merge(df,mg,on='api10',how='left',validate='m:1')
+     return out
+
 def fetch_clean_loc_names(latlon_df):
     latlon_df.StateName.fillna('missing',inplace=True)
     latlon_df.CountyName.fillna('missing',inplace=True)
@@ -87,10 +90,11 @@ def fetch_clean_loc_names(latlon_df):
         return newlen,final
     return newlen,old # if no new
 
+
 def reproject(df):
     # creates bgLat/lon that is standardized to WGS84
     print('  -- re-projecting location points')
-    df['epsg'] = 4267
+    df['epsg'] = 4267 #nad27
     df.epsg = np.where(df.Projection.str.lower()=='nad83',4269,df.epsg)
     df.epsg = np.where(df.Projection.str.lower()=='wgs84',4326,df.epsg)
 
@@ -196,7 +200,9 @@ def save_upload_ref(df,data_source):
     upload_ref_fn = sources+f'{data_source}/uploadKey_ref.csv'
 
     df[['UploadKey','StateName','bgStateName','CountyName','bgCountyName',
-        'Latitude','bgLatitude','Longitude','bgLongitude',
+        'Latitude','bgLatitude','stLatitude',
+        'Longitude','bgLongitude','stLongitude',
+        'bgLocationSource',
         'latlon_too_coarse','loc_name_mismatch',
         'loc_within_state','loc_within_county']]\
             .to_csv(upload_ref_fn,quotechar='$',
@@ -220,9 +226,10 @@ def get_decimal_len(s):
     return len(t)
 
 def get_latlon_df(rawdf):
-    #print(rawdf.columns)
+    rawdf = add_state_location_data(rawdf)
     return rawdf.groupby('UploadKey',as_index=False)\
                                 [['Latitude','Longitude',
+                                  'stLatitude','stLongitude',
                                   'Projection',
                                   'StateNumber','CountyNumber',
                                   'StateName','CountyName']].first()
@@ -240,6 +247,7 @@ def find_latlon_problems(locdf):
 ##########  Main script ###########
 def clean_location(rawdf,data_source='bulk'):
     print('Starting Location cleanup')
+    #rawdf = add_state_location_data(rawdf)
     locdf = get_latlon_df(rawdf)
     rawlen = len(locdf)
     assert locdf.UploadKey.duplicated().sum()==0
@@ -256,12 +264,22 @@ def clean_location(rawdf,data_source='bulk'):
     locdf = pd.merge(reproj_df,
                       clean_names[['StateName','CountyName',
                                    'StateNumber','CountyNumber',
-                                   'bgStateName','bgCountyName','loc_name_mismatch']],
+                                   'bgStateName','bgCountyName',
+                                   'loc_name_mismatch']],
                       on=['StateName','CountyName','StateNumber','CountyNumber'],
                       how='left')
     assert locdf.UploadKey.duplicated().sum()==0
     assert len(locdf)== rawlen
     final = check_against_shapefiles(locdf)
+    final['bgLocationSource'] = 'FF'
+    # use state latlon if errors found
+    c = (final.loc_within_county=='NO')|(final.latlon_too_coarse==True)
+    c1 = final.stLatitude.notna() & c
+    print(f'Number of location errors: {c.sum()}; replacable: {(c&c1).sum()}')
+    final.bgLatitude = np.where(c1,final.stLatitude,final.bgLatitude)
+    final.bgLongitude = np.where(c1,final.stLongitude,final.bgLongitude)
+    final.bgLocationSource = np.where(c1,"state data",final.bgLocationSource)
+
     assert final.UploadKey.duplicated().sum()==0
     assert len(final)== rawlen
 

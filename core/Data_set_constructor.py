@@ -121,6 +121,7 @@ class Data_set_constructor():
         mark_missing = ['CASNumber','IngredientName','Supplier','OperatorName']
         for col in mark_missing:
             raw_df[col].fillna('MISSING',inplace=True)
+        #print(f'in Data_set:\n{raw_df.columns}')
         return raw_df
         
 

@@ -55,6 +55,24 @@ class Read_FF():
                          quotechar='$',encoding='utf-8')
         return df.missing_value.tolist()
     
+    def get_api10(self,df):
+        df['api10'] = df.APINumber.str[:10]
+        return df
+    
+    # def add_state_location_data(self,df):
+    #      """used to import state-derived latlon data into dataframe
+    #      see get_state_data directory for updating the master data file"""
+    #      print('  -- importing state-derived location data')
+    #      gb = df.groupby('api10',as_index=False)['UploadKey'].first()
+    #      gb = gb[['api10']] # don't want UploadKey
+    #      ext_latlon = pd.read_csv(r"C:\MyDocs\OpenFF\data\external_refs\state_latlon.csv",
+    #                               dtype={'api10':str},low_memory=False,
+    #                               quotechar='$',encoding='utf-8')
+    #      mg = pd.merge(gb,ext_latlon[['api10','stLatitude','stLongitude']],
+    #                    on='api10',how='left',validate='1:1')
+    #      out = pd.merge(df,mg,on='api10',how='left',validate='m:1')
+    #      return out
+
     def get_density_from_comment(self,cmmt):
         """take a comment field and return density if it is present"""
         if pd.isna(cmmt):
@@ -186,36 +204,6 @@ class Read_FF():
         final = self.clean_cols(final,cols=varsToKeep)
         return final
 
-    # def import_skytruth_as_str(self,varsToKeep=['UploadKey','APINumber',
-    #                                        'IngredientName','CASNumber',
-    #                                        'StateName','StateNumber',
-    #                                        'CountyName','CountyNumber',
-    #                                        'JobEndDate',
-    #                                        'Latitude','Longitude',
-    #                                        'OperatorName',
-    #                                        'PercentHFJob','PercentHighAdditive',
-    #                                        'Purpose','Supplier','TVD',
-    #                                        'TotalBaseWaterVolume',
-    #                                        'TradeName','WellName']):
-    #     """
-    #     Like import_raw_as_str, but for SkyTruth data        
-    #     """
-    #     dtypes = {}
-    #     for v in varsToKeep:
-    #         dtypes[v] = 'str'
-    #     with zipfile.ZipFile(self.stname) as z:
-    #         fn = z.namelist()[0]
-    #         with z.open(fn) as f:
-    #             print(f' -- processing {fn}')
-    #             t = pd.read_csv(f,low_memory=False,
-    #                             quotechar='$',quoting=csv.QUOTE_ALL,
-    #                             usecols=varsToKeep,
-    #                             dtype=dtypes,
-    #                             na_values=self.missing_values)
-    #             t['raw_filename'] = 'SkyTruth'
-    #     t = self.clean_cols(t,cols=varsToKeep)
-    #     return t
-    
     
     def import_skytruth(self):
         """
@@ -272,6 +260,7 @@ class Read_FF():
         t['IngredientComment'] = ''
         t['density_from_comment'] = np.NaN
         t['JobStartDate'] = 'unknown'
+        
 
         return t
 
@@ -290,6 +279,8 @@ class Read_FF():
             print(' -- processing New Mexico scraped data')
             t = pNM.fetch_final()
             t = self.clean_cols(t)
+        t = self.get_api10(t)
+        #t = self.add_state_location_data(t)
         t.reset_index(drop=True,inplace=True) #  single integer as index
         t['reckey'] = t.index.astype(int)
         if self.data_source=='bulk':   

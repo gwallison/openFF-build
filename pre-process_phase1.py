@@ -20,7 +20,8 @@ stfilename = 'sky_truth_final'
 make_output_files = False
 do_abbrev = False
 #data_source = 'SkyTruth'
-data_source = 'bulk'
+data_source = 'bulk'  # can be 'bulk', 'FFV1_scrape' or 'SkyTruth'
+                      # or 'NM_scrape_2022_05'
 
 startfile = 0 # 0 for full set
 endfile = None  # None for no upper limit
@@ -85,15 +86,11 @@ NEXT STEPS:
         sources/CAS_ref_files folder.  Note that the Scifinder-n doesnt support
         the tagged file, so you have to use the template and do it by hand!
         
-        You need to do the same with CompTox: get the *synonyms* from a bulk search
-        of the new CAS numbers (export into Excel, saved as csv) 
-        and put into the CompTox_ref_file directory.
-        After that, run make_CAS_ref.py to update the CAS_ref_files and synonym
-        files.
-        Also, download the new molecule images for the catalog.
+        Run the make_CAS_ref.py 
         
         *** Then run this script again, then curate it's output
         *****
+        
         
     3)  The company_xlate file has been updated with new names and is ready for
         the CURATION step. Find it as /tmp/company_xlateNEW.csv IF THERE ARE
@@ -117,10 +114,13 @@ NEXT STEPS:
                 - under Enhanced Data Sheets
                     - Synonyms and Identifiers
             rename and save that file in /tmp as comptox_batch_results.xlsx
+            (use direct rename, don't open in editor first)
         b)  run process_comptox_batch.py.  This will extract the data from
             the batch results and store the needed files in the proper
             places.
-        c)  fetch new molecule images with !!!!!!!!!!!!
+            
+        c)  Run make_CAS_ref.py  again.
+
         
 """
 

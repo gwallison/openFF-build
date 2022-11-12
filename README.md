@@ -56,6 +56,15 @@ Find the github repositories of code at:
 - added Reportable Quantities for all bgCAS that have them.  The field
     added is named "rq_lbs".  This value is NaN if the bgCAS is not on the
     list. (Added Aug 14, 2022)
+- Cleaned up the bgCAS that were not striped of trailing spaces.
+- Using new comptox batch cleanup routines. Old EPA names are no longer
+    available, but IUPAC name now included.
+- bgLatitude and bgLongitude are now replaced with state-derived values
+    when errors are detected in the FracFocus versions of those varibales.
+    The field "bgLocationSource" indictates where the bg values come from.
+- added "bgFederalWell" and "bgNativeAmericanLand" that is derived from
+    the PADUS-3 data set
+
 
 ** VERSION 15 **
 
