@@ -138,11 +138,14 @@ def process_PADUS(df,sources='./sources/external_refs/',
                                                                     crs=final_crs))
 
     hits = geopandas.sjoin(gdf,shdf,how='left')  
-    fed = hits[(hits.Own_Type=='FED') | (hits.Mang_Type=='FED')].UploadKey.unique().tolist()
+    fed = hits[hits.Own_Type=='FED'].UploadKey.unique().tolist()
+    stat = hits[hits.Own_Type=='STAT'].UploadKey.unique().tolist()
     nat = hits[(hits.Mang_Type=='TRIB') | (hits.Des_Tp=='TRIBL')].UploadKey.unique().tolist()
-    hits['bgFederalWell'] = hits.UploadKey.isin(fed)
+    hits['bgFederalLand'] = hits.UploadKey.isin(fed)
+    hits['bgStateLand'] = hits.UploadKey.isin(stat)
     hits['bgNativeAmericanLand'] = hits.UploadKey.isin(nat)
-    df['bgFederalWell'] = df.UploadKey.isin(fed)
+    df['bgFederalLand'] = df.UploadKey.isin(fed)
+    df['bgStateLand'] = df.UploadKey.isin(stat)
     df['bgNativeAmericanLand'] = df.UploadKey.isin(nat)
     hits[hits.index_right.notna()].to_csv(out_name,quotechar='$',
                                           encoding='utf-8')

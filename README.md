@@ -20,7 +20,7 @@ filter out any of the original raw FracFocus records allowing
 the user to construct their own appropriate set (by using the flags, etc.).  
 
 Portions of the raw bulk data that are filtered out include: 
-- fracking events with no chemical records (mostly 2011-May 2013
+- fracking events with no chemical records (mostly 2011-May 2013)
 - fracking events with multiple entries (and no indication which entries 
     are correct).
 - chemical records that are identified as redundant within the event.
@@ -59,19 +59,23 @@ Find the github repositories of code at:
 ** BETA **
 
 - added Reportable Quantities for all bgCAS that have them.  The field
-    added is named "rq_lbs".  This value is NaN if the bgCAS is not on the
+    added is named `rq_lbs`.  This value is NaN if the bgCAS is not on the
     list. (Added Aug 14, 2022)
 - Cleaned up the bgCAS that were not striped of trailing spaces.
 - Using new comptox batch cleanup routines. Old EPA names are no longer
     available, but IUPAC name now included.
-- bgLatitude and bgLongitude are now replaced with state-derived values
+- `bgLatitude` and `bgLongitude` are now replaced with state-derived values
     when errors are detected in the FracFocus versions of those varibales.
-    The field "bgLocationSource" indictates where the bg values come from.
-- added "bgFederalWell" and "bgNativeAmericanLand" that is derived from
+    The field `bgLocationSource` indictates where the bg values come from.
+    Also added `stLatitude` and `stLongitude`, the state version of those
+    location data.
+- added `bgFederalWell` and `bgNativeAmericanLand` that is derived from
     the PADUS-3 data set
 
 
 ** VERSION 15 **
+
+- Current download: July 2022
 
 - Revamp location cleanup: require curation of State-County|Name-Number 
     combinations so that ALL bgStateName/CountyName values are consistent with
@@ -79,11 +83,11 @@ Find the github repositories of code at:
     easy to reproject into any other Projection. Compare all reported lat/lon
     to state and county boundaries to identify pairs that are inconsistent with
     reported names. Use geopandas. Removed a few flags but added three
-    new: "loc_name_mismatch", "loc_within_county", "loc_within_state"; keeping
-    "latlon_too_coarse". (May 2, 2022)
+    new: `loc_name_mismatch`, `loc_within_county`, `loc_within_state`; keeping
+    `latlon_too_coarse`. (May 2, 2022)
     
-- Add another criteria to find inconsistent MassIngredient: remove records
-    with PercentHFJob = 0.
+- Add another criteria to find inconsistent `MassIngredient`: remove records
+    with `PercentHFJob` = 0.
 
 ** VERSION 14 **:
 
@@ -141,7 +145,7 @@ Find the github repositories of code at:
 
 - Added testing module to confirm consistency of final data sets.
 
-- Changed calcMass values of zero to NaN to indicate they are a non-disclosed 
+- Changed `calcMass` values of zero to NaN to indicate they are a non-disclosed 
     quantity (Dec. 20,2021)
     
 - in DataDictionary, fixed massCompFlag description to reflect that it is **True** when
@@ -159,7 +163,7 @@ Find the github repositories of code at:
     originally scraped. The removed disclosures are still available in the Full set,
     but not the filtered set. (Jan 26, 2022)
     
-- add the raw field "IngredientComment" back into the Full data set for proprietary
+- add the raw field `IngredientComment` back into the Full data set for proprietary
     claim analysis. (Jan 30, 2022) 
 
 
@@ -180,7 +184,7 @@ Find the github repositories of code at:
 - Changed the file structure of the project to be more in line with python
     package structure. Started new github repository for this branch (openFF-build).
     
-- Removed clusterID and other fields that were experimental or not used.
+- Removed `clusterID` and other fields that were experimental or not used.
 
     
 **Version 10 - MAJOR REVISION**:
@@ -196,8 +200,8 @@ Find the github repositories of code at:
     wrong CASNumbers to be changed or flagged as 'ambiguous'.  Further, this curation
     produces a more thorough characterization of proprietary claims and the
     'category' of the change is available to the end user for further analysis.
-    The translation file ("casing_curated.csv") between original CASNumber/IngredientName pairs and
-    resulting bgCAS is in the /sources directory ("/data" folder for CodeOcean).
+    The translation file ("casing_curated.csv") between original `CASNumber`/`IngredientName` pairs and
+    resulting `bgCAS` is in the /sources directory ("/data" folder for CodeOcean).
     
 - The carrier records of a disclosure are now determined by combination of automation
     and manual curation (instead of just automation as in previous versions). The
@@ -214,15 +218,15 @@ Find the github repositories of code at:
     /data (/sources) folder.
     
 - The calculation of mass for every chemical now incorporates the density of the
-    carrier fluid indicated in the IngredientComments field, when available. This is
+    carrier fluid indicated in the `IngredientComments` field, when available. This is
     currently available for about 24,000 disclosures.
     
 - The calculation of mass now is checked against the undocumented but informative
-    FracFocus field, MassIngredient.  While this field is only available for a subset of disclosures and
-    can be internally inconsistent, when checked against calcMass, we can find (and filter)
+    FracFocus field, `MassIngredient`.  While this field is only available for a subset of disclosures and
+    can be internally inconsistent, when checked against `calcMass`, we can find (and filter)
     records or whole disclosures that may be more error prone.
     
-- ClusterID changed to fixed length string for more consistent searches.
+- `clusterID` changed to fixed length string for more consistent searches.
 
 - Individual boolean flags are available for fine-grained filtering in the full data set.
 
@@ -230,7 +234,7 @@ Find the github repositories of code at:
     bulk data inputs are available in the Analysis_set class and subclasses.  The
     output from the CodeOcean run includes two zipped data set from Analysis_set.
     
-- Text indications of missing values in CASNumber, IngredientName, and Supplier
+- Text indications of missing values in `CASNumber`, `IngredientName`, and `Supplier`
     have been consolidated into the single token: "MISSING." See the tranlation table,
     \data\missing_values.csv.
     
@@ -240,8 +244,8 @@ Find the github repositories of code at:
 - New external reference data sets have been added: The Clean Water Act list as 
     curated by the EPA, the EPA's "Drinking Water Standard and Health Advisories Table",
     EPA's master PFAS list and 
-    EPA's list of volatile chemicals. These fields, 'is_on_CWA', 'is_on_DWSHA',
-    'is_on_PFAS_list' and 'is_on_volatile_list',
+    EPA's list of volatile chemicals. These fields, `is_on_CWA`, `is_on_DWSHA`,
+    `is_on_PFAS_list` and `is_on_volatile_list`,
     can be used to quickly identify those groups of chemicals.
 
 - Large-scale refactoring of code has removed unused or overly complicated 
@@ -252,15 +256,15 @@ Find the github repositories of code at:
 - Correct FF_stats.py calculation for percent non-zero in the integer
     and float section. 
 - Generate geographic clusters as proxy of wellpad identity;
-    clusters are found in the string field "clusterID". (Note that a specific clusterID will NOT be
+    clusters are found in the string field `clusterID`. (Note that a specific clusterID will NOT be
     consistent across data set versions in the way that UploadKey is; don't depend
     on it!).  
-- The fields FederalWell and IndianWell have been changed to string type -
+- The fields `FederalWell` and `IndianWell` have been changed to string type -
     previously, they were boolean (T/F) but that type does not allow for empty
     cells which occurs in the SkyTruth data, leading to misinformation. 
-- Added PercentHighAdditive to full data output to allow for better investigations
+- Added `PercentHighAdditive` to full data output to allow for better investigations
     of TradeName usage. 
-- Rename the old field 'infServiceCo' to 'primarySupplier' to
+- Rename the old field `infServiceCo` to `primarySupplier` to
     better reflect its generation.
 - Added chemical lists of the Clean Water Act, the Safe Drinking Water Act,
     and from California's Proposition 65 lists to help identify chemicals of
@@ -270,10 +274,10 @@ Find the github repositories of code at:
 
 **Version 8**: Added WellName field to filtered data output.  Added chemical ingredient
    codes from the WellExplorer project (www.WellExplorer.org) -- fields with
-   the prefix 'we_' are from that project. See https://doi.org/10.1093/database/baaa053
+   the prefix `we_` are from that project. See https://doi.org/10.1093/database/baaa053
    Data download from FracFocus on October 23, 2020.
 
-**Version 7**: Data downloaded from FracFocus on July 31, 2020.  TradeName added
+**Version 7**: Data downloaded from FracFocus on July 31, 2020.  `TradeName` added
    to exported data.
 
 **Version 6**: Save data tables in pickled form into results section so that it may be
@@ -282,9 +286,9 @@ Find the github repositories of code at:
 **Version 5**: Data downloaded from FracFocus on May 14, 2020.  No other changes.
 
 **Version 4**: Data downloaded from FracFocus on March 20, 2020.  Added the generated
-   field, infServiceCo. This field is an attempt to identify the primary
+   field, `infServiceCo`. This field is an attempt to identify the primary
    service company of a fracking event.  Including in the output files the 
-   raw field 'Projection' which is needed to accurately map using lat/lon
+   raw field `Projection` which is needed to accurately map using lat/lon
    data.
 
 **Version 3**: Data downloaded from FracFocus on Jan. 22, 2020. Modified the 

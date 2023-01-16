@@ -36,7 +36,7 @@ tempfolder = './tmp/'
 
 
 data_source = 'bulk'  # 'bulk' for typical processing
-repo_name = 'v15_beta_2022_11_02'
+repo_name = 'v15_beta_2023_01_14'
 inc_zipped = False # should be true for major repositories
 
 # data_source = 'NM_scrape_2022_05'
@@ -49,7 +49,7 @@ repo_dir = build_common.get_repo_dir() + repo_name
 pklsource = 'currentData_pickles'
 
 descriptive_notes = f""" This is an OpenFF data repository for the 
-bulk download of FracFocus from Nov 2, 2022.
+bulk download of FracFocus from Jan 14, 2023
 
 Created {datetime.date.today()}
 CodeOcean version: 15
