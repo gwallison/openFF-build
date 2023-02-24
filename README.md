@@ -56,24 +56,29 @@ Find the github repositories of code at:
 ## CodeOcean Versions of Open-FF 
 
 
-** BETA **
+**VERSION 16**
+- Current download: February 2023
 
 - added Reportable Quantities for all bgCAS that have them.  The field
     added is named `rq_lbs`.  This value is NaN if the bgCAS is not on the
     list. (Added Aug 14, 2022)
+
 - Cleaned up the bgCAS that were not striped of trailing spaces.
+
 - Using new comptox batch cleanup routines. Old EPA names are no longer
-    available, but IUPAC name now included.
+    available, but IUPAC name now included from comptox search.
+
 - `bgLatitude` and `bgLongitude` are now replaced with state-derived values
     when errors are detected in the FracFocus versions of those varibales.
     The field `bgLocationSource` indictates where the bg values come from.
     Also added `stLatitude` and `stLongitude`, the state version of those
     location data.
-- added `bgFederalWell` and `bgNativeAmericanLand` that is derived from
+
+- added `bgFederalLand` and `bgNativeAmericanLand` that is derived from
     the PADUS-3 data set
 
 
-** VERSION 15 **
+**VERSION 15**
 
 - Current download: July 2022
 
@@ -89,7 +94,7 @@ Find the github repositories of code at:
 - Add another criteria to find inconsistent `MassIngredient`: remove records
     with `PercentHFJob` = 0.
 
-** VERSION 14 **:
+**VERSION 14**:
 
 - Current download: April 2, 2022
 
@@ -117,7 +122,7 @@ Find the github repositories of code at:
     National Primary Drinking Water Regulation list (curated by Angelica Fiuza in
     Feb. 2022); EPA's list of 5 "diesel" ingredients that are regulated
 
-** VERSION 13 (March 2022) **
+**VERSION 13 (March 2022)**
 
 - Remove the "SkyTruth archive" from the standard_filtered data sets. In previous
     versions, this archive has been used to fill in the chemical records for
@@ -139,7 +144,7 @@ Find the github repositories of code at:
     and remember that some records do not reflect what the industy claims as 
     the proper published records.
 
-**Version 12 ** :
+**Version 12** :
 
 - Data downloaded from FracFocus on Feb. 5, 2022
 
@@ -167,7 +172,7 @@ Find the github repositories of code at:
     claim analysis. (Jan 30, 2022) 
 
 
-**Version 11 **:
+**Version 11**:
 
 - Data downloaded from Dec. 4, 2021. 
 
