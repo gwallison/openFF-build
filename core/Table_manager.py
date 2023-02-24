@@ -96,11 +96,11 @@ class Table_constructor():
                                      outdir=self.outdir)
         self.tables['bgCAS'] = df
 
-    def assemble_PADUS_data(self,df):
-        ext_sources_dir = self.sources+'external_refs/'
-        return et.process_PADUS(df,sources=ext_sources_dir,
-                                outdir=self.outdir,
-                                in_data_source=self.data_source)
+    # def assemble_PADUS_data(self,df):
+    #     ext_sources_dir = self.sources+'external_refs/'
+    #     return et.process_PADUS(df,sources=ext_sources_dir,
+    #                             outdir=self.outdir,
+    #                             in_data_source=self.data_source)
         
         
     #########   DISCLOSURE TABLE   ################
@@ -159,7 +159,7 @@ class Table_constructor():
         df = pd.merge(df,self.loc_ref_df,on='UploadKey',how='left',
                       validate='1:1')
         df = self.make_date_fields(df)
-        df = self.assemble_PADUS_data(df) # adds bgFederalWell, bgNat...
+#        df = self.assemble_PADUS_data(df) # adds bgFederalWell, bgNat...
         self.tables['disclosures']= df
 
 
@@ -422,7 +422,6 @@ class Table_constructor():
         self.assemble_companies_table()
         self.assemble_bgCAS_table(self.tables['cas_ing'])
         self.assemble_disclosure_table(df)
-        #df = self.assemble_PADUS_data(df)
         self.assemble_chem_rec_table(df)
         self.apply_carrier_tables()
         self.flag_empty_disclosures()

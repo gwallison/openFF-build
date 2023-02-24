@@ -74,9 +74,6 @@ Find the github repositories of code at:
     Also added `stLatitude` and `stLongitude`, the state version of those
     location data.
 
-- added `bgFederalLand` and `bgNativeAmericanLand` that is derived from
-    the PADUS-3 data set
-
 
 **VERSION 15**
 
