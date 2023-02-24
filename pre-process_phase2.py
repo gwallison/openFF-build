@@ -37,8 +37,9 @@ NEXT STEPS:
         IngName_curator tool to classify
         the new Ingredient names.  Examine the file
         /tmp/ING_curatedNEW.csv and
-        replace the /data/transformed version.  In particular, you are looking
-        to curate proprietary claims.
+        replace the /data/transformed version.  
+        
+        ** In particular, you are looking to curate proprietary claims.
 
         
 """

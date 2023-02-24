@@ -27,7 +27,7 @@ from hashlib import sha256
 import pandas as pd
 import core.Analysis_set as ana_set
 import datetime
-import zipfile
+#import zipfile
 import build_common
 outdir = build_common.get_pickle_dir()
 sources = build_common.get_data_dir()
@@ -36,7 +36,7 @@ tempfolder = './tmp/'
 
 
 data_source = 'bulk'  # 'bulk' for typical processing
-repo_name = 'v15_beta_2023_01_14'
+repo_name = 'v15_beta_2023_02_17'
 inc_zipped = False # should be true for major repositories
 
 # data_source = 'NM_scrape_2022_05'
@@ -154,7 +154,8 @@ for fn in flst:
         if not (fn[-7:]=='_df.pkl'):  # ignore pickled analysis sets
             shutil.copyfile(outdir+pklsource+'/'+fn, pickledir+'/'+fn)
             print(f'copied {fn}')
-        
+
+
 # copy curation files
 
 cfiles = ['carrier_list_auto.csv',
@@ -164,20 +165,29 @@ files = ['CAS_curated.csv',
          'casing_curated.csv','company_xlate.csv','ST_api_without_pdf.csv',
          'ING_curated.csv','CAS_synonyms.csv',
          'CAS_synonyms_CompTox.csv','CAS_ref_and_names.csv',
-         'tripwire_summary.csv','upload_dates.csv']
+         'tripwire_summary.csv','upload_dates.csv',
+         'missing_values.csv']
 
-cdir = 'curation_files/'
+cdir = 'curation_files'
 os.mkdir(cdir) # made in the cwd.
-with zipfile.ZipFile(repo_dir+'/curation_files.zip','w') as z:
-    for fn in files:
-        print(f'  - zipping {fn}')
-        shutil.copy(trans_dir+fn,cdir)
-        z.write(cdir+fn,compress_type=zipfile.ZIP_DEFLATED)    
-    for fn in cfiles:
-        print(f'  - zipping {fn}')
-        shutil.copy(trans_dir+f'{data_source}/{fn}',cdir)
-        z.write(cdir+fn,compress_type=zipfile.ZIP_DEFLATED)    
+
+for fn in files:
+    print(f'  - zipping {fn}')
+    shutil.copy(trans_dir+fn,cdir)
+for fn in cfiles:
+    print(f'  - zipping {fn}')
+    shutil.copy(trans_dir+f'{data_source}/{fn}',cdir)
+shutil.make_archive(os.path.join(repo_dir,cdir),'zip',cdir)
 shutil.rmtree(cdir)         
+
+# copy CAS and CompTox reference files
+
+cdir = 'CAS_ref_files'
+sdir = r"C:\MyDocs\OpenFF\data\external_refs\CAS_ref_files"
+
+cdir = 'CompTox_ref_files'
+sdir = r"C:\MyDocs\OpenFF\data\external_refs\CompTox_ref_files"
+shutil.make_archive(os.path.join(repo_dir,cdir),'zip',sdir)
 
 # now create hashfile
 #  this is a pandas df with all files (except the hashfile) in the "filename"
@@ -192,7 +202,9 @@ to_hash = ['pickles/bgCAS.pkl',
            'pickles/chemrecs.pkl', 
            'pickles/companies.pkl',
            'pickles/disclosures.pkl',
-           'curation_files.zip',                                                        
+           'curation_files.zip',                                        
+           'CAS_ref_files.zip',
+           'CompTox_ref_files.zip',
            'README.txt',
            'standard_filtered.zip',
            'full_no_filter.zip',

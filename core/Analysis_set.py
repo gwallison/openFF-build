@@ -48,14 +48,15 @@ class Template_data_set():
                  outdir=outdir,
                  set_name = 'template',
                  pkl_when_creating=True,
-                 force_new_creation=False):
+                 force_new_creation=False,
+                 pickle_ext = '.pkl'):
         self.set_name= set_name
         self.bulk_fn = bulk_fn
         self.sources = sources
         self.outdir = outdir
         self.df = None
         self.pkldir = self.outdir+self.bulk_fn+'_pickles/'
-        self.pkl_fn = self.pkldir+self.set_name+'_df.pkl'
+        self.pkl_fn = self.pkldir+self.set_name+'_df'+pickle_ext
         self.pkl_when_creating = pkl_when_creating
         self.force_new_creation = force_new_creation
 
