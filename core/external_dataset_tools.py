@@ -97,56 +97,56 @@ def add_all_bgCAS_tables(df,sources='./sources/external_refs/',
     return df
 
 #################  PADUS shape files ############################
-# def process_PADUS(df,sources='./sources/external_refs/',
-#                          outdir='./outdir/',
-#                          use_pkl=True,
-#                          in_data_source='bulk'):
-#     """Find joins with the PADUS database.  Note that some wells may have
-#     more than one join.  This routine will add the boolean fields 
-#        bgFederalWells and
-#        bgNativeWells
-#     as well as a csv file with more details.
-#     concat geopandas: https://gis.stackexchange.com/questions/162659/joining-concat-list-of-similar-dataframes-in-geopandas
-#     """
-#     print(' -- searching for wells on Fed and Native lands')
-#     pkl_name = os.path.join(sources,'shape_files','padus.pkl')
-#     out_name = os.path.join(outdir,f'PADUS_hits_{in_data_source}.csv')
-#     if use_pkl:
-#         try:
-#             shdf = pd.read_pickle(pkl_name)
-#         except:
-#             print('  -- fetch PADUS from zip files')
-#             allshp = []
-#             # shp_fn = r"C:\MyDocs\OpenFF\data\external_refs\shape_files\PADUS3_0_Region_7_SHP.zip!PADUS3_0Combined_Region7.shp"
-#             for i in range(1,12):
-#                 print(f'     PADUS {i} file processed')
-#                 shp_fn = os.path.join(sources,'shape_files',
-#                                       f'PADUS3_0_Region_{i}_SHP.zip!PADUS3_0Combined_Region{i}.shp')
-#                 shpdf = geopandas.read_file(shp_fn).to_crs(final_crs)
-#                 allshp.append(shpdf)
+def process_PADUS(df,sources='./sources/external_refs/',
+                          outdir='./outdir/',
+                          use_pkl=True,
+                          in_data_source='bulk'):
+    """Find joins with the PADUS database.  Note that some wells may have
+    more than one join.  This routine will add the boolean fields 
+        bgFederalWells and
+        bgNativeWells
+    as well as a csv file with more details.
+    concat geopandas: https://gis.stackexchange.com/questions/162659/joining-concat-list-of-similar-dataframes-in-geopandas
+    """
+    print(' -- searching for wells on Fed and Native lands')
+    pkl_name = os.path.join(sources,'shape_files','padus.pkl')
+    out_name = os.path.join(outdir,f'PADUS_hits_{in_data_source}.csv')
+    if use_pkl:
+        try:
+            shdf = pd.read_pickle(pkl_name)
+        except:
+            print('  -- fetch PADUS from zip files')
+            allshp = []
+            # shp_fn = r"C:\MyDocs\OpenFF\data\external_refs\shape_files\PADUS3_0_Region_7_SHP.zip!PADUS3_0Combined_Region7.shp"
+            for i in range(1,12):
+                print(f'     PADUS {i} file processed')
+                shp_fn = os.path.join(sources,'shape_files',
+                                      f'PADUS3_0_Region_{i}_SHP.zip!PADUS3_0Combined_Region{i}.shp')
+                shpdf = geopandas.read_file(shp_fn).to_crs(final_crs)
+                allshp.append(shpdf)
         
-#             shdf = geopandas.GeoDataFrame(pd.concat(allshp,
-#                                                     ignore_index=True), 
-#                                           crs=allshp[0].crs)
-#             shdf.to_pickle(pkl_name)
+            shdf = geopandas.GeoDataFrame(pd.concat(allshp,
+                                                    ignore_index=True), 
+                                          crs=allshp[0].crs)
+            shdf.to_pickle(pkl_name)
     
-#     t = df.groupby('UploadKey',as_index=False)[['bgLatitude','bgLongitude',
-#                                             'bgStateName','APINumber']].first()
-#     gdf = geopandas.GeoDataFrame(t,
-#                                  geometry= geopandas.points_from_xy(t.bgLongitude, 
-#                                                                     t.bgLatitude,
-#                                                                     crs=final_crs))
+    t = df.groupby('UploadKey',as_index=False)[['bgLatitude','bgLongitude',
+                                            'bgStateName','APINumber']].first()
+    gdf = geopandas.GeoDataFrame(t,
+                                  geometry= geopandas.points_from_xy(t.bgLongitude, 
+                                                                    t.bgLatitude,
+                                                                    crs=final_crs))
 
-#     hits = geopandas.sjoin(gdf,shdf,how='left')  
-#     fed = hits[hits.Own_Type=='FED'].UploadKey.unique().tolist()
-#     stat = hits[hits.Own_Type=='STAT'].UploadKey.unique().tolist()
-#     nat = hits[(hits.Mang_Type=='TRIB') | (hits.Des_Tp=='TRIBL')].UploadKey.unique().tolist()
-#     hits['bgFederalLand'] = hits.UploadKey.isin(fed)
-#     hits['bgStateLand'] = hits.UploadKey.isin(stat)
-#     hits['bgNativeAmericanLand'] = hits.UploadKey.isin(nat)
-#     df['bgFederalLand'] = df.UploadKey.isin(fed)
-#     df['bgStateLand'] = df.UploadKey.isin(stat)
-#     df['bgNativeAmericanLand'] = df.UploadKey.isin(nat)
-#     hits[hits.index_right.notna()].to_csv(out_name,quotechar='$',
-#                                           encoding='utf-8')
-#     return df
+    hits = geopandas.sjoin(gdf,shdf,how='left')  
+    fed = hits[hits.Own_Type=='FED'].UploadKey.unique().tolist()
+    stat = hits[hits.Own_Type=='STAT'].UploadKey.unique().tolist()
+    nat = hits[(hits.Mang_Type=='TRIB') | (hits.Des_Tp=='TRIBL')].UploadKey.unique().tolist()
+    hits['bgFederalLand'] = hits.UploadKey.isin(fed)
+    hits['bgStateLand'] = hits.UploadKey.isin(stat)
+    hits['bgNativeAmericanLand'] = hits.UploadKey.isin(nat)
+    df['bgFederalLand'] = df.UploadKey.isin(fed)
+    df['bgStateLand'] = df.UploadKey.isin(stat)
+    df['bgNativeAmericanLand'] = df.UploadKey.isin(nat)
+    hits[hits.index_right.notna()].to_csv(out_name,quotechar='$',
+                                          encoding='utf-8')
+    return df
