@@ -36,7 +36,7 @@ tempfolder = './tmp/'
 
 
 data_source = 'bulk'  # 'bulk' for typical processing
-repo_name = 'v15_beta_2023_02_17'
+repo_name = 'v16_2023_03_18'
 inc_zipped = False # should be true for major repositories
 
 # data_source = 'NM_scrape_2022_05'
@@ -49,19 +49,11 @@ repo_dir = build_common.get_repo_dir() + repo_name
 pklsource = 'currentData_pickles'
 
 descriptive_notes = f""" This is an OpenFF data repository for the 
-bulk download of FracFocus from Jan 14, 2023
+bulk download of FracFocus from March 18, 2023
 
 Created {datetime.date.today()}
-CodeOcean version: 15
-Since the version 15 release, this beta version incorporates:
- - The field "rq_lbs" was added from the the ver 15 code.
- - Cleaned up the bgCAS that were not striped of trailing spaces.
- - Using new comptox batch cleanup routines. Old EPA names are no longer
-    available.
- - bgLatitude and bgLongitude are now replaced with state-derived values
-    when errors are detected in the FracFocus versions of those varibales.
-    The field bgLocationSource indictates where the bg values come from.
- - include stLatitude and stLongitude in the disclosure table.
+CodeOcean version: 16
+Since the version 16 release, this beta version incorporates:
  - added bgFederalWell and bgNativeAmericanWell that is derived from
     the PADUS-3 data set.
  

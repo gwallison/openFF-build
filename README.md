@@ -55,6 +55,9 @@ Find the github repositories of code at:
 
 ## CodeOcean Versions of Open-FF 
 
+**Beta - in cloud version**
+- tweak automated  carrier  identifiers to keep disclosures on the edges that were
+    previously avoided but were still viable for calculating mass.
 
 **VERSION 16**
 - Current download: February 2023
